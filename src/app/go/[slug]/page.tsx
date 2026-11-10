@@ -12,7 +12,9 @@ import { GetTheApp } from "@/components/go/GetTheApp";
 type Props = { params: Promise<{ slug: string }> };
 
 function normalise(raw: string): string | null {
-  const slug = decodeURIComponent(raw).trim().toLowerCase();
+  /* Next has already decoded the segment; decoding again would throw on a
+     literal "%" and turn a typo into a 500. */
+  const slug = raw.trim().toLowerCase();
   if (!isSlugShaped(slug) || RESERVED_SLUGS.has(slug)) return null;
   return slug;
 }
