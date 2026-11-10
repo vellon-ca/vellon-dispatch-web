@@ -1,0 +1,510 @@
+@import "tailwindcss";
+
+/* ------------------------------------------------------------------
+   Vellon — machined instrument
+   Neutral dark ground, brass used only on data and drawings, square
+   corners, hairline rules. Colour carries information; it never
+   decorates. Structure comes from an asymmetric grid, as before.
+   ------------------------------------------------------------------ */
+
+:root {
+  /* Surfaces */
+  --bg: #0f1114;
+  --surface: #16191d;
+  --surface-2: #1b1f24;
+
+  /* Type */
+  --fg: #e2e6e9;
+  --fg-2: #9aa3ab;
+  --fg-3: #79828a;
+
+  /* Rules */
+  --rule: rgba(255, 255, 255, 0.1);
+  --rule-2: rgba(255, 255, 255, 0.19);
+
+  /* The single signal — data, drawings and state only */
+  --brass: #c4a06a;
+  --brass-dim: #8a6f45;
+}
+
+@theme inline {
+  --color-bg: var(--bg);
+  --color-surface: var(--surface);
+  --color-surface-2: var(--surface-2);
+  --color-fg: var(--fg);
+  --color-fg-2: var(--fg-2);
+  --color-fg-3: var(--fg-3);
+  --color-rule: var(--rule);
+  --color-rule-2: var(--rule-2);
+  --color-brass: var(--brass);
+  --color-brass-dim: var(--brass-dim);
+
+  --font-sans: var(--font-archivo);
+  --font-mono: var(--font-plex-mono);
+}
+
+/* Default border colour must sit in @layer base. Written unlayered it wins
+   over every Tailwind border-* utility regardless of specificity, because
+   unlayered declarations outrank layered ones in the cascade — which
+   silently turned border-brass, border-fg and border-rule-2 back into the
+   default hairline everywhere they were used. */
+@layer base {
+  * {
+    border-color: var(--rule);
+  }
+}
+
+html {
+  scroll-behavior: smooth;
+  -webkit-text-size-adjust: 100%;
+}
+
+body {
+  background: var(--bg);
+  color: var(--fg);
+  font-family: var(--font-archivo), system-ui, sans-serif;
+  font-feature-settings: "kern", "liga", "calt";
+  -webkit-font-smoothing: antialiased;
+  -moz-osx-font-smoothing: grayscale;
+  overflow-x: hidden;
+}
+
+::selection {
+  background: var(--brass);
+  color: #0f1114;
+}
+
+/* ---------- Type ---------- */
+
+/* The display face is the grotesk, set tight. No serif anywhere. */
+.display {
+  font-family: var(--font-archivo), system-ui, sans-serif;
+  font-weight: 500;
+  letter-spacing: -0.032em;
+  line-height: 1.03;
+}
+
+.display-xl {
+  font-size: clamp(2.5rem, 6.2vw, 5.2rem);
+}
+.display-lg {
+  font-size: clamp(2rem, 4.2vw, 3.4rem);
+}
+.display-md {
+  font-size: clamp(1.4rem, 2.4vw, 2rem);
+  line-height: 1.1;
+}
+
+/* Machine-readable metadata: mono, wide, quiet */
+.label {
+  font-family: var(--font-plex-mono), ui-monospace, monospace;
+  font-size: 0.6875rem;
+  font-weight: 400;
+  letter-spacing: 0.14em;
+  text-transform: uppercase;
+  color: var(--fg-3);
+}
+
+.lede {
+  font-size: clamp(1rem, 1.25vw, 1.15rem);
+  line-height: 1.65;
+  color: var(--fg-2);
+}
+
+/* Index numerals — mono with tabular figures so columns line up */
+.numeral {
+  font-family: var(--font-plex-mono), ui-monospace, monospace;
+  font-variant-numeric: tabular-nums lining-nums;
+  letter-spacing: 0.1em;
+}
+
+/* ---------- Structure ---------- */
+
+/* Underline that draws in from the left */
+.link-draw {
+  position: relative;
+  display: inline-block;
+}
+.link-draw::after {
+  content: "";
+  position: absolute;
+  left: 0;
+  bottom: -2px;
+  height: 1px;
+  width: 100%;
+  background: currentColor;
+  transform: scaleX(0);
+  transform-origin: left;
+  transition: transform 0.42s cubic-bezier(0.22, 0.61, 0.36, 1);
+}
+.link-draw:hover::after {
+  transform: scaleX(1);
+}
+
+/* Index row — the brass rule confirms the row is live */
+.index-row {
+  position: relative;
+  transition: background-color 0.4s cubic-bezier(0.22, 0.61, 0.36, 1);
+}
+.index-row::after {
+  content: "";
+  position: absolute;
+  left: 0;
+  bottom: -1px;
+  height: 1px;
+  width: 100%;
+  background: var(--brass);
+  transform: scaleX(0);
+  transform-origin: left;
+  transition: transform 0.55s cubic-bezier(0.22, 0.61, 0.36, 1);
+}
+.index-row:hover::after {
+  transform: scaleX(1);
+}
+
+/* Inputs read as fields on a form, not as boxes */
+.field-line {
+  width: 100%;
+  background: transparent;
+  border: 0;
+  border-bottom: 1px solid var(--rule);
+  padding: 0.6rem 0;
+  font-size: 0.9375rem;
+  color: var(--fg);
+  outline: none;
+  transition: border-color 0.3s ease;
+}
+.field-line::placeholder {
+  color: var(--fg-3);
+}
+.field-line:focus {
+  border-bottom-color: var(--brass);
+}
+
+/* Scrub track — a hairline rule that fills brass as the film plays.
+   The fill is driven by --p rather than the element's background, because
+   Firefox paints ::-moz-range-track over it and the fill would vanish. */
+.tp-seek {
+  display: block;
+  /* Tall enough to be hit with a thumb; the track stays a hairline. */
+  height: 22px;
+  padding: 0;
+  margin: 0;
+  cursor: pointer;
+  appearance: none;
+  -webkit-appearance: none;
+  -moz-appearance: none;
+  background: transparent;
+  touch-action: none;
+  --p: 0%;
+}
+.tp-seek::-webkit-slider-runnable-track {
+  height: 3px;
+  background: linear-gradient(
+    to right,
+    var(--brass) var(--p),
+    var(--rule-2) var(--p)
+  );
+}
+.tp-seek::-moz-range-track {
+  height: 3px;
+  background: linear-gradient(
+    to right,
+    var(--brass) var(--p),
+    var(--rule-2) var(--p)
+  );
+}
+.tp-seek::-webkit-slider-thumb {
+  -webkit-appearance: none;
+  width: 9px;
+  height: 9px;
+  margin-top: -4px;
+  background: var(--brass);
+  border: 0;
+  border-radius: 0;
+}
+.tp-seek::-moz-range-thumb {
+  width: 9px;
+  height: 9px;
+  background: var(--brass);
+  border: 0;
+  border-radius: 0;
+}
+.tp-seek:focus-visible {
+  outline: 2px solid var(--brass);
+  outline-offset: 3px;
+}
+
+/* Film player in full screen. The UA sizes the wrapper to the screen, so
+   the video has to be told to fit inside it — left alone it keeps its
+   intrinsic height and pins to the top with the transport stranded below.
+   :fullscreen and :-webkit-full-screen can't share a selector list: a
+   browser that doesn't know one of them drops the whole rule. */
+.film-player:fullscreen {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: 100%;
+  height: 100%;
+  border: 0;
+  background: #000;
+}
+.film-player:fullscreen video {
+  width: 100%;
+  height: 100%;
+  object-fit: contain;
+}
+.film-player:-webkit-full-screen {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: 100%;
+  height: 100%;
+  border: 0;
+  background: #000;
+}
+.film-player:-webkit-full-screen video {
+  width: 100%;
+  height: 100%;
+  object-fit: contain;
+}
+.film-player:focus {
+  outline: none;
+}
+
+/* Tick strip — a small instrument detail, used sparingly */
+.ticks {
+  display: flex;
+  gap: 3px;
+  align-items: flex-end;
+  height: 14px;
+}
+.ticks i {
+  width: 1px;
+  height: 5px;
+  background: var(--fg-3);
+  display: block;
+}
+.ticks i:nth-child(5n + 1) {
+  height: 13px;
+  background: var(--fg-2);
+}
+
+/* ---------- Scrollbar ----------
+   Chromium 121+ lets scrollbar-width/color win over ::-webkit-scrollbar,
+   so the standard properties are scoped to Firefox and Chromium keeps
+   the webkit rules. */
+@supports (-moz-appearance: none) {
+  html {
+    scrollbar-width: thin;
+    scrollbar-color: #343b42 var(--bg);
+  }
+}
+
+::-webkit-scrollbar {
+  width: 11px;
+}
+::-webkit-scrollbar-track {
+  background: var(--bg);
+}
+::-webkit-scrollbar-thumb {
+  background: #2b3138;
+  border: 3px solid var(--bg);
+}
+::-webkit-scrollbar-thumb:hover {
+  background: #3a424a;
+}
+
+@media (prefers-reduced-motion: reduce) {
+  html {
+    scroll-behavior: auto;
+  }
+  *,
+  *::before,
+  *::after {
+    animation-duration: 0.01ms !important;
+    transition-duration: 0.01ms !important;
+  }
+}
+
+/* ---------- Legal prose ----------
+   Long-form documents rendered from markdown (content/legal/). Styled here
+   rather than with a typography plugin: the plugin's defaults are built for a
+   light editorial page and would have to be overridden token by token to reach
+   this palette, which is more CSS than writing it once.
+
+   Measure is capped on the text elements, NOT on the container, because the
+   tables need to be wider than comfortable reading width for prose. */
+
+.legal-prose {
+  font-size: 0.9375rem;
+  line-height: 1.7;
+  color: var(--fg-2);
+}
+
+.legal-prose > * + * {
+  margin-top: 1.1em;
+}
+
+.legal-prose h1 {
+  font-family: var(--font-archivo), system-ui, sans-serif;
+  font-weight: 500;
+  letter-spacing: -0.032em;
+  line-height: 1.03;
+  font-size: clamp(2rem, 4.2vw, 3.4rem);
+  color: var(--fg);
+  max-width: 20ch;
+}
+
+.legal-prose h2 {
+  font-family: var(--font-archivo), system-ui, sans-serif;
+  font-weight: 500;
+  letter-spacing: -0.025em;
+  line-height: 1.15;
+  font-size: clamp(1.3rem, 2.2vw, 1.85rem);
+  color: var(--fg);
+  max-width: 28ch;
+  margin-top: 3.2em;
+  padding-top: 1.6em;
+  border-top: 1px solid var(--rule);
+}
+
+/* The first h2 sits directly under the h1's own metadata block, where a second
+   rule immediately below the header rule reads as a mistake. */
+.legal-prose h1 + p + h2 {
+  border-top: 0;
+  padding-top: 0;
+}
+
+.legal-prose h3 {
+  font-family: var(--font-archivo), system-ui, sans-serif;
+  font-weight: 500;
+  letter-spacing: -0.02em;
+  font-size: 1.0625rem;
+  line-height: 1.3;
+  color: var(--fg);
+  margin-top: 2.4em;
+}
+
+.legal-prose p,
+.legal-prose li {
+  max-width: 72ch;
+  text-wrap: pretty;
+}
+
+.legal-prose strong {
+  color: var(--fg);
+  font-weight: 500;
+}
+
+.legal-prose a {
+  color: var(--fg);
+  text-decoration: underline;
+  text-decoration-color: var(--rule-2);
+  text-underline-offset: 0.2em;
+  transition: text-decoration-color 0.3s ease, color 0.3s ease;
+}
+
+.legal-prose a:hover {
+  color: var(--brass);
+  text-decoration-color: var(--brass);
+}
+
+.legal-prose ul {
+  list-style: none;
+  padding-left: 0;
+}
+
+.legal-prose li {
+  position: relative;
+  padding-left: 1.4em;
+  margin-top: 0.55em;
+}
+
+/* Hairline dash rather than a bullet — same instrument language as the rules. */
+.legal-prose li::before {
+  content: "";
+  position: absolute;
+  left: 0;
+  top: 0.78em;
+  width: 0.65em;
+  height: 1px;
+  background: var(--brass-dim);
+}
+
+.legal-prose li > ul {
+  margin-top: 0.4em;
+}
+
+.legal-prose hr {
+  border: 0;
+  height: 1px;
+  background: var(--rule);
+  margin-top: 2.6em;
+}
+
+/* An <hr> immediately before a section heading would double the heading's own
+   top rule. The markdown uses them as section separators, so they are redundant
+   here rather than wrong there. */
+.legal-prose hr + h2 {
+  border-top: 0;
+  padding-top: 0;
+  margin-top: 1.6em;
+}
+
+/* ---------- Tables ----------
+   Each table is wrapped in .legal-table by the renderer so that a wide table
+   scrolls WITHIN ITSELF. Without the wrapper the page body scrolls sideways on a
+   phone, which breaks the whole layout rather than one element. */
+
+.legal-table {
+  overflow-x: auto;
+  margin-top: 1.6em;
+  border-top: 1px solid var(--rule);
+  /* Fades at the right edge to signal there is more to scroll to. */
+  -webkit-overflow-scrolling: touch;
+}
+
+.legal-prose table {
+  width: 100%;
+  min-width: 34rem;
+  border-collapse: collapse;
+  font-size: 0.875rem;
+}
+
+.legal-prose th {
+  font-family: var(--font-plex-mono), ui-monospace, monospace;
+  font-size: 0.6875rem;
+  font-weight: 400;
+  letter-spacing: 0.14em;
+  text-transform: uppercase;
+  color: var(--fg-3);
+  text-align: left;
+  vertical-align: bottom;
+  padding: 0.85rem 1.2rem 0.85rem 0;
+  border-bottom: 1px solid var(--rule);
+  white-space: nowrap;
+}
+
+.legal-prose td {
+  padding: 0.9rem 1.2rem 0.9rem 0;
+  border-bottom: 1px solid var(--rule);
+  vertical-align: top;
+  color: var(--fg-2);
+}
+
+.legal-prose tr > *:last-child {
+  padding-right: 0;
+}
+
+/* First column is the subject of the row — read it as the label. */
+.legal-prose td:first-child {
+  color: var(--fg);
+  min-width: 11rem;
+}
+
+/* Anchored headings must not land under the fixed navbar when arrived at from an
+   in-page link. */
+.legal-prose :target {
+  scroll-margin-top: 7rem;
+}
