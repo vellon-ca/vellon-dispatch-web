@@ -35,6 +35,10 @@ export function Footer() {
               Terms
             </a>
             <span aria-hidden className="h-3 w-px bg-rule" />
+            <a href="/delete-account" className="link-draw transition-colors hover:text-fg">
+              Delete account
+            </a>
+            <span aria-hidden className="h-3 w-px bg-rule" />
             <a
               href="mailto:hello@vellon.ca"
               className="link-draw transition-colors hover:text-fg"
