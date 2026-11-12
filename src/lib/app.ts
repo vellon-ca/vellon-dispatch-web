@@ -27,6 +27,16 @@ export const APP_STORE_URL: string | null = null;
 export const PLAY_STORE_BASE = `https://play.google.com/store/apps/details?id=${ANDROID_PACKAGE}`;
 export const PLAY_LISTED = false;
 
+/* Play closed test. A personal Play account must run a closed test (12
+   testers, 14 days) before the app can go to production, and until then the
+   listing exists only for people who joined the group and opted in. While
+   PLAY_TESTING is on and the app is not listed, the Google Play button becomes
+   those three steps. Turn it off when production opens and PLAY_LISTED goes
+   true. */
+export const PLAY_TESTING = true;
+export const PLAY_TEST_GROUP_URL = "https://groups.google.com/g/vellon";
+export const PLAY_OPT_IN_URL = `https://play.google.com/apps/testing/${ANDROID_PACKAGE}`;
+
 /* The Play link for one company. Play hands `referrer` to the app on first
    launch (Install Referrer), which is how a fresh Android install opens on the
    company whose link was tapped instead of on the picker. */
