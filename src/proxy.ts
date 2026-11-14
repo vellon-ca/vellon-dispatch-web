@@ -1,13 +1,15 @@
 import { NextResponse } from "next/server";
 import type { NextRequest } from "next/server";
 
-/* One project, two hosts. go.vellon.ca is the passenger link domain and is
-   rewritten onto the /go routes; every other host is the product site, which
-   must never serve /go itself (a passenger page on the company site would be a
-   second, unassociated copy of every link).
+/* One project, three hosts. go.vellon.ca is the passenger link domain and is
+   rewritten onto the /go routes; corporate.vellon.ca is the business account
+   manager portal, rewritten onto /corporate; every other host is the product
+   site, which must never serve /go or /corporate itself (a passenger page on
+   the company site would be a second, unassociated copy of every link).
 
-   `go.localhost` stands in for go.vellon.ca in `next dev`. */
+   `go.localhost` and `corporate.localhost` stand in for them in `next dev`. */
 const GO_HOSTS = new Set(["go.vellon.ca", "go.localhost"]);
+const CORPORATE_HOSTS = new Set(["corporate.vellon.ca", "corporate.localhost"]);
 
 /* The association files have fixed names that cannot be route folders here
    (a leading dot), so each is mapped to a plain route explicitly. */
@@ -27,7 +29,16 @@ export function proxy(request: NextRequest) {
     return NextResponse.rewrite(url);
   }
 
-  if (pathname === "/go" || pathname.startsWith("/go/")) {
+  if (CORPORATE_HOSTS.has(host)) {
+    const url = request.nextUrl.clone();
+    url.pathname = `/corporate${pathname === "/" ? "" : pathname}`;
+    return NextResponse.rewrite(url);
+  }
+
+  if (
+    pathname === "/go" || pathname.startsWith("/go/") ||
+    pathname === "/corporate" || pathname.startsWith("/corporate/")
+  ) {
     return new NextResponse("Not found", { status: 404 });
   }
   return NextResponse.next();

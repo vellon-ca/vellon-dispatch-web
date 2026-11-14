@@ -6,13 +6,14 @@ The public website for **Vellon Dispatch**, separate from the company site
 (`vellon-webpage`, vellon.ca) so Dispatch-only things can be added without
 touching it. Shared project context: `/home/victor/Documents/projects/CLAUDE.md`.
 
-One Next.js 16 project, **two hosts**, split by `src/proxy.ts` (Next 16's name
+One Next.js 16 project, **three hosts**, split by `src/proxy.ts` (Next 16's name
 for middleware):
 
 | Host | Audience | Routes |
 |---|---|---|
 | `dispatch.vellon.ca` | taxi companies | `src/app/(site)/` — the product page, moved from vellon.ca/dispatch |
 | `go.vellon.ca` | passengers | `src/app/go/` — rewritten from the host root |
+| `corporate.vellon.ca` | business account managers | `src/app/corporate/` — rewritten from the host root |
 
 - **`go.vellon.ca/<slug>`** is a company's link (QR codes, cards, stickers). With
   the app installed the phone opens the app at that company and the page is never
@@ -41,3 +42,16 @@ for middleware):
 Local: `npm run dev`, then `http://localhost:3000` for the product site and
 `http://go.localhost:3000/keswick` for a link page. Env: `.env.example`
 (also set in Vercel).
+
+## Manager portal (corporate.vellon.ca)
+
+Business account managers sign in by emailed code as IDENTITIES on the mgcj
+Supabase project and act only through the `ba_*` functions (design:
+`mgcj-app/.claude/notes/business-accounts-design.md` §10). It runs in the
+browser, so it reads `NEXT_PUBLIC_SUPABASE_URL` / `NEXT_PUBLIC_SUPABASE_PUBLISHABLE_KEY`,
+a pair separate from the link pages' server-only one. **DEV values in Preview and
+locally; unset in Production** until the portal goes live (unset, it says "not
+available yet"). The look follows the dispatch dashboard's tokens
+(`corporate.css`), not the product site's. Local: `http://corporate.localhost:3000`.
+Sign-in first calls the `manager-sign-in` Edge Function, then
+`signInWithOtp({ shouldCreateUser: false })`.
