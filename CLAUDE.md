@@ -52,6 +52,6 @@ browser, so it reads `NEXT_PUBLIC_SUPABASE_URL` / `NEXT_PUBLIC_SUPABASE_PUBLISHA
 a pair separate from the link pages' server-only one. **DEV values in Preview and
 locally; unset in Production** until the portal goes live (unset, it says "not
 available yet"). The look follows the dispatch dashboard's tokens
-(`corporate.css`), not the product site's. Local: `http://corporate.localhost:3000`.
+(`corporate.css`), not the product site's. Local: `http://corporate.localhost:3000`. On a Vercel **preview** (a `*.vercel.app` host) it is at `/corporate`; the proxy allows that only when `VERCEL_ENV=preview`.
 Sign-in first calls the `manager-sign-in` Edge Function, then
 `signInWithOtp({ shouldCreateUser: false })`.

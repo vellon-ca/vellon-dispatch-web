@@ -35,10 +35,15 @@ export function proxy(request: NextRequest) {
     return NextResponse.rewrite(url);
   }
 
-  if (
-    pathname === "/go" || pathname.startsWith("/go/") ||
-    pathname === "/corporate" || pathname.startsWith("/corporate/")
-  ) {
+  /* A Vercel PREVIEW runs on *.vercel.app, where neither portal host exists, so
+     the portal is reachable there at /corporate. Preview carries DEV Supabase;
+     production never serves /corporate except on its own host. */
+  const isCorporatePath = pathname === "/corporate" || pathname.startsWith("/corporate/");
+  if (isCorporatePath && process.env.VERCEL_ENV === "preview") {
+    return NextResponse.next();
+  }
+
+  if (pathname === "/go" || pathname.startsWith("/go/") || isCorporatePath) {
     return new NextResponse("Not found", { status: 404 });
   }
   return NextResponse.next();
