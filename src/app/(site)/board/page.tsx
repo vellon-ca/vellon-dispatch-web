@@ -1,6 +1,6 @@
 import type { Metadata } from "next";
 import { ProductPage } from "@/components/site/ProductPage";
-import { ScreenFrame } from "@/components/site/Frames";
+import { ScreenFrame, ScreenGrid } from "@/components/site/Frames";
 import { DEMO_CAPTION, PHOTOS, SHOTS } from "@/lib/media";
 
 export const metadata: Metadata = {
@@ -61,6 +61,16 @@ export default function BoardPage() {
           body: "Dispatchers sign in with a code sent to their email. Nothing to install: it runs in the browser.",
         },
       ]}
+      gallery={
+        <ScreenGrid
+          shots={[
+            { ...SHOTS.boardRide, caption: "A ride open: driver, route, fare and every action" },
+            { ...SHOTS.newRide, caption: "A phone booking, entered in seconds" },
+            { ...SHOTS.scheduled, caption: "Scheduled rides, each with its coverage" },
+            { ...SHOTS.revenue, caption: "Revenue by day, week, month and year" },
+          ]}
+        />
+      }
       photo={PHOTOS.boardHero}
       band={{
         title: "One screen for the whole shift.",

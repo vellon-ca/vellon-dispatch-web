@@ -5,9 +5,9 @@ import type { ReactNode } from "react";
    device and stays sharp at any size. Send raw screenshots, never framed
    ones: the frame is added here. */
 
-/* An iPhone with a Dynamic Island. Proportions are an iPhone 15/16 Pro's
-   (393 x 852 pt screen, a 126 x 37 pt island 11 pt from the top), so a raw
-   screenshot from any Dynamic Island iPhone lines up with the island. */
+/* An iPhone with a Dynamic Island, in Pro Max proportions (440 x 956 pt
+   screen, a 126 x 37 pt island 11 pt from the top): the screenshots are
+   1320 x 2868 Pro Max captures, and the island lands where theirs was. */
 export function PhoneFrame({
   src,
   alt,
@@ -27,11 +27,11 @@ export function PhoneFrame({
   return (
     <div className={`[container-type:inline-size] ${className}`}>
       <div className="rounded-[15cqw] bg-[#0b0b0c] p-[3.2cqw] shadow-[0_30px_60px_-20px_rgba(11,11,12,0.45)]">
-      <div className="relative aspect-[393/852] overflow-hidden rounded-[12cqw] bg-[#0b0b0c]">
+      <div className="relative aspect-[440/956] overflow-hidden rounded-[12cqw] bg-[#0b0b0c]">
         <Image src={src} alt={alt} fill sizes={sizes} priority={priority} className="object-cover object-top" />
         <span
           aria-hidden="true"
-          className="absolute left-1/2 top-[1.3%] aspect-[126/37] w-[32%] -translate-x-1/2 rounded-full bg-black"
+          className="absolute left-1/2 top-[1.15%] aspect-[126/37] w-[28.6%] -translate-x-1/2 rounded-full bg-black"
         />
       </div>
       </div>
@@ -102,6 +102,42 @@ export function PhotoSlot({
         </p>
       )}
       {children ? <div className="relative h-full">{children}</div> : null}
+    </div>
+  );
+}
+
+/* A row of phones with a caption under each (product pages). */
+export function PhoneRow({ shots }: { shots: { src: string; alt: string; caption: string }[] }) {
+  return (
+    <div
+      className={`grid grid-cols-2 gap-x-5 gap-y-10 md:gap-x-8 ${
+        shots.length > 3 ? "md:grid-cols-4" : shots.length === 3 ? "mx-auto max-w-[54rem] md:grid-cols-3" : "mx-auto max-w-[36rem]"
+      }`}
+    >
+      {shots.map((s) => (
+        <figure key={s.src} className="flex flex-col items-center">
+          <PhoneFrame src={s.src} alt={s.alt} className="w-full max-w-[250px]" sizes="(min-width: 768px) 250px, 45vw" />
+          <figcaption className="mt-4 text-center text-[0.9375rem] font-medium">{s.caption}</figcaption>
+        </figure>
+      ))}
+    </div>
+  );
+}
+
+/* Board screens side by side, with a caption under each (product pages). */
+export function ScreenGrid({
+  shots,
+}: {
+  shots: { src: string; alt: string; width: number; height: number; caption: string }[];
+}) {
+  return (
+    <div className="grid grid-cols-1 gap-x-6 gap-y-10 md:grid-cols-2">
+      {shots.map((s) => (
+        <figure key={s.src}>
+          <ScreenFrame src={s.src} alt={s.alt} width={s.width} height={s.height} sizes="(min-width: 768px) 600px, 100vw" />
+          <figcaption className="mt-4 text-[0.9375rem] font-medium">{s.caption}</figcaption>
+        </figure>
+      ))}
     </div>
   );
 }

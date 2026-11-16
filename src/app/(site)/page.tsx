@@ -66,14 +66,14 @@ export default function HomePage() {
         </Reveal>
 
         <Reveal delay={0.15} className="relative mx-auto mt-16 max-w-[70rem] pb-6 md:mt-20 md:pb-10">
-          <ScreenFrame {...SHOTS.board} priority />
+          <ScreenFrame {...SHOTS.boardRide} priority />
           <PhoneFrame
-            {...SHOTS.booking}
+            {...SHOTS.pOnTheWay}
             priority
             className="absolute -bottom-2 -left-2 w-[24%] min-w-[96px] md:-left-6 md:w-[22%]"
           />
           <PhoneFrame
-            {...SHOTS.driverOnline}
+            {...SHOTS.dOffer}
             priority
             className="absolute -bottom-2 -right-2 w-[24%] min-w-[96px] md:-right-6 md:w-[22%]"
           />
@@ -111,7 +111,7 @@ export default function HomePage() {
               </p>
             </div>
             <div className="relative ml-7 mt-7 min-h-[13.75rem] flex-1 overflow-hidden rounded-tl-[14px] border-l border-t border-rule-2 md:ml-8">
-              <Image src={SHOTS.board.src} alt="" fill sizes="(min-width: 768px) 700px, 100vw" className="shot-crop scale-[1.6] origin-top-left" />
+              <Image src={SHOTS.boardRide.src} alt="" fill sizes="(min-width: 768px) 900px, 100vw" className="object-cover object-[62%_38%]" />
             </div>
           </StaggerItem>
 
@@ -134,7 +134,7 @@ export default function HomePage() {
               </p>
             </div>
             <div className="relative h-[15.5rem] w-[44%] self-end overflow-hidden rounded-t-[22px] border-[6px] border-b-0 border-[var(--ink)] bg-[var(--ink)]">
-              <Image src={SHOTS.booking.src} alt="" fill sizes="200px" className="object-cover object-top" />
+              <Image src={SHOTS.pConfirm.src} alt="" fill sizes="200px" className="object-cover object-top" />
             </div>
           </StaggerItem>
 
@@ -159,7 +159,7 @@ export default function HomePage() {
               </p>
             </div>
             <div className="relative mx-7 mt-7 min-h-[13.75rem] flex-1 overflow-hidden rounded-t-[14px] border-x border-t border-rule-2 md:mx-8">
-              <Image src={SHOTS.records.src} alt="" fill sizes="(min-width: 768px) 700px, 100vw" className="shot-crop scale-[1.4] origin-top-left" />
+              <Image src={SHOTS.history.src} alt="" fill sizes="(min-width: 768px) 700px, 100vw" className="shot-crop scale-[1.4] origin-top-left" />
             </div>
           </StaggerItem>
 

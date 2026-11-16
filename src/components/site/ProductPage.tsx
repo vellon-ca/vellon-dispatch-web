@@ -17,6 +17,7 @@ export function ProductPage({
   lede,
   visual,
   features,
+  gallery,
   photo,
   band,
 }: {
@@ -26,6 +27,8 @@ export function ProductPage({
   lede: string;
   visual: ReactNode;
   features: Feature[];
+  /* More screens, shown under the feature list. */
+  gallery?: ReactNode;
   photo: { src?: string; brief: string };
   band: { title: string; body: string };
 }) {
@@ -63,6 +66,12 @@ export function ProductPage({
           ))}
         </Stagger>
       </section>
+
+      {gallery ? (
+        <section className="mx-auto max-w-[77.5rem] px-4 pt-20 sm:px-6 md:pt-24">
+          <Reveal>{gallery}</Reveal>
+        </section>
+      ) : null}
 
       <section className="mx-auto max-w-[77.5rem] px-4 pt-24 sm:px-6 md:pt-32">
         <Reveal>

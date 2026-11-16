@@ -1,6 +1,6 @@
 import type { Metadata } from "next";
 import { ProductPage } from "@/components/site/ProductPage";
-import { PhoneFrame } from "@/components/site/Frames";
+import { PhoneFrame, PhoneRow } from "@/components/site/Frames";
 import { DEMO_CAPTION, PHOTOS, SHOTS } from "@/lib/media";
 
 export const metadata: Metadata = {
@@ -19,7 +19,7 @@ export default function DriverAppPage() {
       lede="Go online, take the offer, drive, close out. Built to be used one-handed between rides, on iPhone and Android."
       visual={
         <figure className="flex flex-col items-center">
-          <PhoneFrame {...SHOTS.driverOnline} priority className="w-[62%] max-w-[300px]" />
+          <PhoneFrame {...SHOTS.dOffer} priority className="w-[62%] max-w-[300px]" />
           <figcaption className="mt-4 text-xs text-fg-3">{DEMO_CAPTION}</figcaption>
         </figure>
       }
@@ -61,6 +61,15 @@ export default function DriverAppPage() {
           body: "Drivers join your company with an invite code from the board.",
         },
       ]}
+      gallery={
+        <PhoneRow
+          shots={[
+            { ...SHOTS.dOnline, caption: "Online, waiting for a ride" },
+            { ...SHOTS.dNavigate, caption: "The route to the drop-off" },
+            { ...SHOTS.dComplete, caption: "Close out a cash ride" },
+          ]}
+        />
+      }
       photo={PHOTOS.driverHero}
       band={{
         title: "Fewer calls on the radio.",

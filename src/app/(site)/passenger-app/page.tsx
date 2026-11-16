@@ -1,6 +1,6 @@
 import type { Metadata } from "next";
 import { ProductPage } from "@/components/site/ProductPage";
-import { PhoneFrame } from "@/components/site/Frames";
+import { PhoneFrame, PhoneRow } from "@/components/site/Frames";
 import { DEMO_CAPTION, PHOTOS, SHOTS } from "@/lib/media";
 
 export const metadata: Metadata = {
@@ -19,7 +19,7 @@ export default function PassengerAppPage() {
       lede="Your passengers book with your company, see the fare before they confirm, and watch the car arrive. iPhone and Android."
       visual={
         <figure className="flex flex-col items-center">
-          <PhoneFrame {...SHOTS.booking} priority className="w-[62%] max-w-[300px]" />
+          <PhoneFrame {...SHOTS.pConfirm} priority className="w-[62%] max-w-[300px]" />
           <figcaption className="mt-4 text-xs text-fg-3">{DEMO_CAPTION}</figcaption>
         </figure>
       }
@@ -61,6 +61,16 @@ export default function PassengerAppPage() {
           body: "Passengers can choose a vehicle type you offer, such as a larger or wheelchair-accessible car.",
         },
       ]}
+      gallery={
+        <PhoneRow
+          shots={[
+            { ...SHOTS.pHome, caption: "Cars nearby, where to?" },
+            { ...SHOTS.pSchedule, caption: "Book for later" },
+            { ...SHOTS.pOnTheWay, caption: "The driver on the way" },
+            { ...SHOTS.pRate, caption: "Rate the ride" },
+          ]}
+        />
+      }
       photo={PHOTOS.passengerHero}
       band={{
         title: "No more “where's my cab?” calls.",

@@ -1,7 +1,7 @@
 import type { Metadata } from "next";
 import { ProductPage } from "@/components/site/ProductPage";
-import { PhoneFrame } from "@/components/site/Frames";
-import { PHOTOS, SHOTS } from "@/lib/media";
+import { PhoneRow, ScreenFrame } from "@/components/site/Frames";
+import { DEMO_CAPTION, PHOTOS, SHOTS } from "@/lib/media";
 
 export const metadata: Metadata = {
   title: "Payments",
@@ -18,9 +18,10 @@ export default function PaymentsPage() {
       title="Card money lands on its own."
       lede="Card fares are charged on your company's own Stripe account and paid out to your bank. Cash is recorded on every ride. Both appear in the same record."
       visual={
-        <div className="flex justify-center">
-          <PhoneFrame {...SHOTS.booking} priority className="w-[62%] max-w-[300px]" />
-        </div>
+        <figure>
+          <ScreenFrame {...SHOTS.revenue} priority sizes="(min-width: 1024px) 640px, 100vw" />
+          <figcaption className="mt-3 text-xs text-fg-3">{DEMO_CAPTION}</figcaption>
+        </figure>
       }
       features={[
         {
@@ -60,6 +61,14 @@ export default function PaymentsPage() {
           body: "You can run on cash alone and switch cards on when you are ready.",
         },
       ]}
+      gallery={
+        <PhoneRow
+          shots={[
+            { ...SHOTS.pConfirm, caption: "The passenger picks card or cash" },
+            { ...SHOTS.dComplete, caption: "Cash is entered at the end of the ride" },
+          ]}
+        />
+      }
       photo={PHOTOS.paymentsHero}
       band={{
         title: "The same rate on cash and card.",
