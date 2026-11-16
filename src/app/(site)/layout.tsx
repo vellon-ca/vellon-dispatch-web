@@ -1,18 +1,14 @@
 import type { Metadata } from "next";
-import { Inter, Inter_Tight } from "next/font/google";
+import { Inter } from "next/font/google";
 import "./site.css";
 import { SiteNav } from "@/components/site/SiteNav";
 import { SiteFooter } from "@/components/site/SiteFooter";
 
-/* The product site's own fonts and look. The root layout (shared with
-   go.vellon.ca) keeps Archivo; these load only on this site's pages. */
+/* The product site's own font. The root layout (shared with go.vellon.ca)
+   keeps Archivo; this loads only on this site's pages. Headings are Inter
+   with tightened tracking: Inter Tight failed to build on Vercel ("next/font/
+   google queries have exactly one entry", 2026-11-16) while building locally. */
 const inter = Inter({ variable: "--font-inter", subsets: ["latin"], display: "swap" });
-const interTight = Inter_Tight({
-  variable: "--font-inter-tight",
-  subsets: ["latin"],
-  weight: ["500", "600", "700"],
-  display: "swap",
-});
 
 export const metadata: Metadata = {
   title: {
@@ -61,7 +57,7 @@ export default function SiteLayout({
   children: React.ReactNode;
 }>) {
   return (
-    <div className={`site-root ${inter.variable} ${interTight.variable} flex min-h-full flex-1 flex-col`}>
+    <div className={`site-root ${inter.variable} flex min-h-full flex-1 flex-col`}>
       <script type="application/ld+json" dangerouslySetInnerHTML={{ __html: JSON.stringify(structuredData) }} />
       <SiteNav />
       <main className="relative flex-1">{children}</main>

@@ -39,7 +39,7 @@ for middleware):
 
 ## The product site's look (redesign, 2026-11-16)
 
-White, Inter Tight / Inter, rounded tiles, one cobalt accent (`--accent`) for
+White, Inter (headings tightly tracked; Inter Tight failed on Vercel), rounded tiles, one cobalt accent (`--accent`) for
 what you can act on. Scoped to `.site-root` in `src/app/(site)/site.css`, which
 redefines the shared tokens (`--bg`, `--fg`, `--rule`…) so existing utilities
 turn light inside it. **Nothing in the redesign may touch the root layout,
