@@ -130,3 +130,133 @@ body:has(.site-root) {
   outline-offset: 3px;
   border-radius: 6px;
 }
+
+/* ---------- Legal documents (privacy, terms, EN + FR) ----------
+   Rendered from content/legal/*.md by lib/legalDoc.ts. The rules are
+   vellon.ca's (globals.css .legal-prose), restated in this site's look. */
+.site-root .legal-prose {
+  font-size: 0.9375rem;
+  line-height: 1.7;
+  color: var(--fg-2);
+}
+.site-root .legal-prose > * + * {
+  margin-top: 1.1em;
+}
+.site-root .legal-prose h1 {
+  font-weight: 700;
+  letter-spacing: -0.035em;
+  line-height: 1.02;
+  font-size: clamp(2.25rem, 4.6vw, 3.5rem);
+  color: var(--fg);
+  max-width: 20ch;
+}
+.site-root .legal-prose h2 {
+  font-weight: 700;
+  letter-spacing: -0.025em;
+  line-height: 1.15;
+  font-size: clamp(1.375rem, 2.2vw, 1.75rem);
+  color: var(--fg);
+  max-width: 30ch;
+  margin-top: 3em;
+  padding-top: 1.5em;
+  border-top: 1px solid var(--rule);
+  scroll-margin-top: 5rem;
+}
+.site-root .legal-prose h1 + p + h2 {
+  border-top: 0;
+  padding-top: 0;
+}
+.site-root .legal-prose h3 {
+  font-weight: 600;
+  font-size: 1.0625rem;
+  line-height: 1.3;
+  color: var(--fg);
+  margin-top: 2.2em;
+  scroll-margin-top: 5rem;
+}
+.site-root .legal-prose p,
+.site-root .legal-prose li {
+  max-width: 72ch;
+  text-wrap: pretty;
+}
+.site-root .legal-prose strong {
+  color: var(--fg);
+  font-weight: 600;
+}
+.site-root .legal-prose a {
+  color: var(--accent);
+  text-decoration: underline;
+  text-underline-offset: 0.2em;
+}
+.site-root .legal-prose a:hover {
+  color: #1c3fb8;
+}
+.site-root .legal-prose ul {
+  list-style: none;
+  padding-left: 0;
+}
+.site-root .legal-prose li {
+  position: relative;
+  padding-left: 1.3em;
+  margin-top: 0.55em;
+}
+.site-root .legal-prose li::before {
+  content: "";
+  position: absolute;
+  left: 0;
+  top: 0.72em;
+  width: 0.4em;
+  height: 0.4em;
+  border-radius: 50%;
+  background: var(--fg-3);
+}
+.site-root .legal-prose li > ul {
+  margin-top: 0.4em;
+}
+.site-root .legal-prose hr {
+  border: 0;
+  height: 1px;
+  background: var(--rule);
+  margin-top: 2.6em;
+}
+.site-root .legal-prose hr + h2 {
+  border-top: 0;
+  padding-top: 0;
+  margin-top: 1.6em;
+}
+.site-root .legal-table {
+  overflow-x: auto;
+  margin-top: 1.6em;
+  border: 1px solid var(--rule);
+  border-radius: 14px;
+}
+.site-root .legal-prose table {
+  width: 100%;
+  min-width: 34rem;
+  border-collapse: collapse;
+  font-size: 0.875rem;
+}
+.site-root .legal-prose th {
+  font-size: 0.75rem;
+  font-weight: 600;
+  color: var(--fg-3);
+  text-align: left;
+  vertical-align: bottom;
+  padding: 0.8rem 1rem;
+  background: var(--surface);
+  border-bottom: 1px solid var(--rule);
+  white-space: nowrap;
+}
+.site-root .legal-prose td {
+  padding: 0.85rem 1rem;
+  border-bottom: 1px solid var(--rule);
+  vertical-align: top;
+  color: var(--fg-2);
+}
+.site-root .legal-prose tr:last-child td {
+  border-bottom: 0;
+}
+.site-root .legal-prose td:first-child {
+  color: var(--fg);
+  min-width: 11rem;
+}

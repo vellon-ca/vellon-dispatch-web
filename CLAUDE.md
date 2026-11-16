@@ -31,8 +31,8 @@ for middleware):
   first path segments a company can never use. Keep it in step with the database
   check on `companies.slug`.
 - The product site never serves `/go` (proxy returns 404): one copy of every link.
-- Contact, privacy and terms stay on vellon.ca (`src/lib/site.ts`): one vendor,
-  one contact form, one set of terms.
+- go.vellon.ca links to vellon.ca for privacy and terms (`src/lib/site.ts`). The
+  product site has its own contact, demo and legal pages (below).
 - `globals.css` and `Reveal` are shared with go.vellon.ca, whose
   look must not change. `.link-draw` sets `display` outside Tailwind's layers,
   so `hidden` on the same element does nothing: hide a wrapper instead.
@@ -60,6 +60,23 @@ turn light inside it. **Nothing in the redesign may touch the root layout,
 - The demo films (old palette) were taken out 2026-11-16 until new ones are
   made; `components/dispatch/Films.tsx` and `public/media/film-*` are in git
   history (before that commit) if the player is wanted again.
+- **Legal pages** (`/privacy`, `/terms`, `/fr/privacy`, `/fr/terms`) render
+  `content/legal/*.md` with `lib/legalDoc.ts`, both BYTE-IDENTICAL copies of
+  vellon-webpage's (md5 at copy, 2026-11-16: privacy en `c585825d`, terms en
+  `db5f25a7`, privacy fr `becdc195`, terms fr `abb54c9a`; recheck with
+  `md5sum content/legal/*.md` in both repos). vellon.ca stays canonical until
+  the app in review is approved (the app and store listings link there): the
+  pages here carry `canonical: https://vellon.ca/...` and are not in the
+  sitemap. Until the move, a legal edit goes into BOTH repos, and
+  vellon-webpage's `npm run check:legal` is the EN/FR shape check.
+- **`/demo` and `/contact`** are server actions in `lib/forms.ts` that email
+  hello@vellon.ca through Resend (`RESEND_API_KEY`, set in Vercel for
+  Production and Preview). One email per submission and never an auto-reply:
+  the Resend account (free, 100/day) also sends dispatcher sign-in codes, and
+  an auto-reply would let anyone make no-reply@vellon.ca mail any address.
+  Bots are dropped silently by a hidden `website` field and a 3 s minimum
+  fill-in time; the backstop is a Vercel Firewall rate limit on both paths.
+  The questionnaire is defined once in `lib/demoFields.ts` (form and email).
 - Copy states only what the product does today. No stats, testimonials or
   claims about competitors.
 

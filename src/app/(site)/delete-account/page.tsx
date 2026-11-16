@@ -1,5 +1,5 @@
 import type { Metadata } from "next";
-import { PRIVACY_URL } from "@/lib/site";
+import Link from "next/link";
 
 /* Google Play's account-deletion URL for the Vellon app (ca.vellon.dispatch).
    Play wants a page, reachable without installing the app, that names the app
@@ -117,9 +117,9 @@ export default function DeleteAccountPage() {
 
           <p className="border-t border-rule pt-8 text-sm text-fg-3">
             Full detail is in our{" "}
-            <a href={PRIVACY_URL} className="link-draw text-fg-2 hover:text-fg">
+            <Link href="/privacy" className="link-draw text-fg-2 hover:text-fg">
               privacy policy
-            </a>
+            </Link>
             . Questions:{" "}
             <a href={`mailto:${SUPPORT}`} className="link-draw text-fg-2 hover:text-fg">
               {SUPPORT}

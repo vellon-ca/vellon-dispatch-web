@@ -1,7 +1,6 @@
 import type { Metadata } from "next";
 import Link from "next/link";
 import { Reveal, Stagger, StaggerItem } from "@/components/Reveal";
-import { CONTACT_URL } from "@/lib/site";
 
 export const metadata: Metadata = {
   title: "Pricing",
@@ -78,9 +77,9 @@ export default function PricingPage() {
                 We&rsquo;ll come back with a rate.
               </p>
               <div className="mt-7 flex flex-wrap gap-3">
-                <a href={CONTACT_URL} className="btn btn-light">
-                  Get in touch
-                </a>
+                <Link href="/demo" className="btn btn-light">
+                  Tell us about your fleet
+                </Link>
                 <Link href="/faq" className="btn border border-white/30 text-white hover:border-white">
                   Read the FAQ
                 </Link>

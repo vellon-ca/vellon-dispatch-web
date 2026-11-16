@@ -1,6 +1,6 @@
 import type { Metadata } from "next";
+import Link from "next/link";
 import { Reveal } from "@/components/Reveal";
-import { CONTACT_URL } from "@/lib/site";
 
 export const metadata: Metadata = {
   title: "FAQ",
@@ -78,9 +78,9 @@ export default function FaqPage() {
           <h1 className="font-display h-page mt-4">Questions</h1>
           <p className="mt-5 max-w-[48ch] text-lg leading-relaxed text-fg-2">
             What taxi companies ask before they switch. Something missing?{" "}
-            <a href={CONTACT_URL} className="underline underline-offset-2 hover:text-[var(--accent)]">
+            <Link href="/contact" className="underline underline-offset-2 hover:text-[var(--accent)]">
               Ask us
-            </a>
+            </Link>
             .
           </p>
         </Reveal>

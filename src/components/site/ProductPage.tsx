@@ -4,7 +4,6 @@ import { Reveal, Stagger, StaggerItem } from "@/components/Reveal";
 import { PhotoSlot } from "./Frames";
 import { ProductIcon } from "./SiteNav";
 import { PRODUCT_PAGES } from "@/lib/nav";
-import { CONTACT_URL } from "@/lib/site";
 
 export type Feature = { title: string; body: string };
 
@@ -42,9 +41,9 @@ export function ProductPage({
           <h1 className="font-display h-page mt-4 max-w-[14ch] text-balance">{title}</h1>
           <p className="mt-6 max-w-[46ch] text-lg leading-relaxed text-fg-2 text-pretty">{lede}</p>
           <div className="mt-9 flex flex-wrap gap-3">
-            <a href={CONTACT_URL} className="btn btn-accent">
+            <Link href="/demo" className="btn btn-accent">
               Book a demo
-            </a>
+            </Link>
             <Link href="/pricing" className="btn btn-outline">
               How pricing works
             </Link>
@@ -89,9 +88,9 @@ export function ProductPage({
       <section className="mx-auto max-w-[77.5rem] px-4 pt-24 sm:px-6 md:pt-32">
         <Reveal className="flex flex-wrap items-end justify-between gap-6">
           <h2 className="font-display h-section max-w-[16ch]">The rest of the system</h2>
-          <a href={CONTACT_URL} className="btn btn-dark">
+          <Link href="/demo" className="btn btn-dark">
             Book a demo
-          </a>
+          </Link>
         </Reveal>
         <div className="mt-10 grid grid-cols-1 gap-4 md:grid-cols-3">
           {others.map((p) => (

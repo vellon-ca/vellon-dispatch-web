@@ -3,7 +3,6 @@ import Image from "next/image";
 import Link from "next/link";
 import { Reveal, Stagger, StaggerItem } from "@/components/Reveal";
 import { PhoneFrame, PhotoSlot, ScreenFrame } from "@/components/site/Frames";
-import { CONTACT_URL } from "@/lib/site";
 import { DEMO_CAPTION, PHOTOS, SHOTS } from "@/lib/media";
 
 export const metadata: Metadata = {
@@ -55,9 +54,9 @@ export default function HomePage() {
             Taxi dispatch software for fleets of 3 cars to 300.
           </p>
           <div className="mt-9 flex flex-wrap justify-center gap-3">
-            <a href={CONTACT_URL} className="btn btn-accent">
+            <Link href="/demo" className="btn btn-accent">
               Book a demo
-            </a>
+            </Link>
             <Link href="/board" className="btn btn-outline">
               Explore the product
             </Link>
@@ -210,9 +209,9 @@ export default function HomePage() {
               <p className="mx-auto mt-4 max-w-[40ch] text-[1.0625rem] text-[#c9ccd2]">
                 Tell us about your fleet and we will show you the board on your own streets.
               </p>
-              <a href={CONTACT_URL} className="btn btn-light mt-8">
+              <Link href="/demo" className="btn btn-light mt-8">
                 Book a demo
-              </a>
+              </Link>
             </div>
           </PhotoSlot>
         </Reveal>

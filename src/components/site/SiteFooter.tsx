@@ -1,6 +1,6 @@
 import Link from "next/link";
 import { PRODUCT_PAGES, TOP_PAGES } from "@/lib/nav";
-import { CONTACT_URL, DASHBOARD_URL, PRIVACY_URL, TERMS_URL, VELLON_URL } from "@/lib/site";
+import { DASHBOARD_URL, VELLON_URL } from "@/lib/site";
 
 export function SiteFooter() {
   return (
@@ -36,10 +36,10 @@ export function SiteFooter() {
         </div>
         <div className="flex flex-col gap-2.5">
           <p className="text-fg-3">Help</p>
-          <a href={CONTACT_URL} className="hover:text-[var(--accent)]">Contact</a>
+          <Link href="/contact" className="hover:text-[var(--accent)]">Contact</Link>
           <a href={DASHBOARD_URL} className="hover:text-[var(--accent)]">Sign in</a>
-          <a href={PRIVACY_URL} className="hover:text-[var(--accent)]">Privacy</a>
-          <a href={TERMS_URL} className="hover:text-[var(--accent)]">Terms</a>
+          <Link href="/privacy" className="hover:text-[var(--accent)]">Privacy</Link>
+          <Link href="/terms" className="hover:text-[var(--accent)]">Terms</Link>
         </div>
       </div>
       <p className="mt-16 border-t border-rule pt-6 text-[0.8125rem] text-fg-3">

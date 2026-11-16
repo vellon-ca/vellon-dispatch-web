@@ -1,8 +1,8 @@
 import type { Metadata } from "next";
+import Link from "next/link";
 import { Reveal } from "@/components/Reveal";
 import { PhotoSlot } from "@/components/site/Frames";
 import { PHOTOS } from "@/lib/media";
-import { CONTACT_URL } from "@/lib/site";
 
 export const metadata: Metadata = {
   title: "Switching to Vellon Dispatch",
@@ -49,9 +49,9 @@ export default function SwitchingPage() {
             Whether you dispatch from a notebook and the phone today, or from another system, here is what moving
             to Vellon Dispatch looks like.
           </p>
-          <a href={CONTACT_URL} className="btn btn-accent mt-9">
+          <Link href="/demo" className="btn btn-accent mt-9">
             Start the conversation
-          </a>
+          </Link>
         </Reveal>
         <Reveal delay={0.12}>
           <PhotoSlot {...PHOTOS.ledger} className="aspect-[4/3] rounded-3xl" sizes="(min-width: 1024px) 600px, 100vw" />
@@ -85,9 +85,9 @@ export default function SwitchingPage() {
               Tell us what you use today and what you would want to keep. Passengers who already have your number
               can keep calling it; dispatch books those rides on the board.
             </p>
-            <a href={CONTACT_URL} className="link-arrow mt-6 inline-block">
+            <Link href="/contact" className="link-arrow mt-6 inline-block">
               Talk to us &rarr;
-            </a>
+            </Link>
           </div>
         </Reveal>
       </section>

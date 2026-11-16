@@ -4,7 +4,7 @@ import Link from "next/link";
 import { usePathname } from "next/navigation";
 import { useEffect, useRef, useState } from "react";
 import { PRODUCT_PAGES, TOP_PAGES } from "@/lib/nav";
-import { CONTACT_URL, DASHBOARD_URL } from "@/lib/site";
+import { DASHBOARD_URL } from "@/lib/site";
 import { Wordmark } from "./Wordmark";
 
 const ICONS: Record<string, React.ReactNode> = {
@@ -168,13 +168,13 @@ export function SiteNav() {
                     </span>
                   </Link>
                 ))}
-                <a
-                  href={CONTACT_URL}
+                <Link
+                  href="/demo"
                   className="col-start-3 row-span-2 row-start-1 flex flex-col justify-end overflow-hidden rounded-xl bg-[var(--ink)] p-4 text-white"
                 >
                   <span className="text-[0.9375rem] font-semibold">Book a demo</span>
                   <span className="mt-1 text-[0.8125rem] text-[var(--ink-2)]">See the board on your own streets</span>
-                </a>
+                </Link>
               </div>
             </div>
           </div>
@@ -194,9 +194,9 @@ export function SiteNav() {
           <a href={DASHBOARD_URL} className="hidden px-3 py-2 text-sm font-medium transition-colors hover:text-[var(--accent)] sm:inline">
             Sign in
           </a>
-          <a href={CONTACT_URL} className="btn btn-dark hidden !min-h-[40px] !px-[1.125rem] !py-2 !text-sm sm:inline-flex">
+          <Link href="/demo" className="btn btn-dark hidden !min-h-[40px] !px-[1.125rem] !py-2 !text-sm sm:inline-flex">
             Book a demo
-          </a>
+          </Link>
           <button
             type="button"
             aria-label="Open menu"
@@ -249,9 +249,9 @@ export function SiteNav() {
           ))}
         </nav>
         <div className="flex flex-col gap-2.5 p-4 sm:px-6">
-          <a href={CONTACT_URL} className="btn btn-accent w-full">
+          <Link href="/demo" className="btn btn-accent w-full">
             Book a demo
-          </a>
+          </Link>
           <a href={DASHBOARD_URL} className="btn btn-outline w-full">
             Sign in
           </a>
