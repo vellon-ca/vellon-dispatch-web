@@ -35,17 +35,21 @@ export const SHOTS = {
   dComplete: { src: "/media/d-complete.jpg", alt: "Driver app: completing a ride and entering the cash fare" },
 } satisfies Record<string, Board | Phone>;
 
-/* Photos still to be chosen (Unsplash). `src` stays undefined until one is
-   picked; the slot shows its brief instead. */
+/* Photos from Unsplash (free under the Unsplash License; no credit required),
+   chosen by Victor 2026-11-16. The originals are in
+   ~/Pictures/Web Redesign Pics/Unsplash/1-8.jpg; portrait ones (1, 2, 5) are
+   cropped to a wide band here. `position` is which part a tile keeps. */
+type Photo = { src: string | undefined; brief: string; alt: string; position?: string };
+
 export const PHOTOS = {
-  nightCity: { src: undefined as string | undefined, brief: "city at night, long-exposure tail lights" },
-  aerialRoad: { src: undefined as string | undefined, brief: "aerial road through trees or along the coast" },
-  boardHero: { src: undefined as string | undefined, brief: "city grid from above, or a calm desk at night" },
-  passengerHero: { src: undefined as string | undefined, brief: "someone waiting at a curb with a phone, or rain on a car window" },
-  driverHero: { src: undefined as string | undefined, brief: "hands on a steering wheel at dusk" },
-  paymentsHero: { src: undefined as string | undefined, brief: "a card tapping a terminal, close up" },
-  ledger: { src: undefined as string | undefined, brief: "an old paper ledger, notebook and pencil" },
-};
+  nightCity: { src: "/media/photos/night-city.jpg", brief: "city at night", alt: "Light trails along a city street at night, seen from above" },
+  aerialRoad: { src: "/media/photos/highway-fence.jpg", brief: "highway along the water", alt: "A waterfront highway and city skyline at dusk, through a chain-link fence", position: "center 60%" },
+  boardHero: { src: "/media/photos/aerial-street.jpg", brief: "street grid from above", alt: "A street and rooftops seen straight down from above" },
+  passengerHero: { src: "/media/photos/curb-phone.jpg", brief: "waiting at a curb with a phone", alt: "A man at the curb looking at his phone beside a parked car", position: "center 40%" },
+  driverHero: { src: "/media/photos/steering-wheel.jpg", brief: "hands on a steering wheel", alt: "A driver's hand on the steering wheel at dusk", position: "center 35%" },
+  paymentsHero: { src: "/media/photos/tap-to-pay.jpg", brief: "paying by phone at a terminal", alt: "A phone held to a card terminal to pay", position: "center 70%" },
+  ledger: { src: "/media/photos/ledger.jpg", brief: "an old paper ledger", alt: "An old handwritten register open on a table" },
+} satisfies Record<string, Photo>;
 
 /* Shown under any screenshot of seeded data. */
 export const DEMO_CAPTION = "Demonstration data";

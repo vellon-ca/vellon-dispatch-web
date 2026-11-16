@@ -73,6 +73,8 @@ export function PhotoSlot({
   src,
   alt = "",
   brief,
+  position = "center",
+  scrim = "bottom",
   className = "",
   children,
   sizes = "100vw",
@@ -80,6 +82,10 @@ export function PhotoSlot({
   src?: string;
   alt?: string;
   brief: string;
+  /* object-position: which part of the photo a crop keeps. */
+  position?: string;
+  /* "bottom" darkens under bottom-left text; "even" under centred text. */
+  scrim?: "bottom" | "even";
   className?: string;
   children?: ReactNode;
   sizes?: string;
@@ -88,8 +94,14 @@ export function PhotoSlot({
     <div className={`relative overflow-hidden bg-[#1b1e24] ${className}`}>
       {src ? (
         <>
-          <Image src={src} alt={alt} fill sizes={sizes} className="object-cover" />
-          <span aria-hidden="true" className="absolute inset-0 bg-black/35" />
+          <Image src={src} alt={alt} fill sizes={sizes} className="object-cover" style={{ objectPosition: position }} />
+          {/* A fade only where text sits on the photo. */}
+          {children ? <span
+            aria-hidden="true"
+            className={`absolute inset-0 ${
+              scrim === "even" ? "bg-black/50" : "bg-gradient-to-t from-black/80 via-black/35 to-black/5"
+            }`}
+          /> : null}
         </>
       ) : (
         <p className="absolute right-4 top-3.5 m-0 flex items-center gap-1.5 text-xs text-[#9ea3ad]">

@@ -29,7 +29,7 @@ export function ProductPage({
   features: Feature[];
   /* More screens, shown under the feature list. */
   gallery?: ReactNode;
-  photo: { src?: string; brief: string };
+  photo: { src?: string; brief: string; alt?: string; position?: string };
   band: { title: string; body: string };
 }) {
   const others = PRODUCT_PAGES.filter((p) => p.href !== path);

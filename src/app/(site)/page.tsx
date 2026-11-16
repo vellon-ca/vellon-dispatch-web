@@ -204,7 +204,7 @@ export default function HomePage() {
       {/* ---------- Closing band ---------- */}
       <section className="mx-auto max-w-[77.5rem] px-4 pt-28 sm:px-6 md:pt-36">
         <Reveal>
-          <PhotoSlot {...PHOTOS.aerialRoad} className="rounded-[2rem]">
+          <PhotoSlot {...PHOTOS.aerialRoad} scrim="even" className="rounded-[2rem]">
             <div className="flex min-h-[27.5rem] flex-col items-center justify-center px-6 py-12 text-center text-white">
               <h2 className="font-display text-[clamp(2.25rem,5vw,4rem)] font-bold leading-none">See it run your fleet.</h2>
               <p className="mx-auto mt-4 max-w-[40ch] text-[1.0625rem] text-[#c9ccd2]">
