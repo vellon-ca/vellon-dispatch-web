@@ -168,13 +168,13 @@ export function SiteNav() {
                     </span>
                   </Link>
                 ))}
-                <Link
-                  href="/#films"
+                <a
+                  href={CONTACT_URL}
                   className="col-start-3 row-span-2 row-start-1 flex flex-col justify-end overflow-hidden rounded-xl bg-[var(--ink)] p-4 text-white"
                 >
-                  <span className="text-[0.9375rem] font-semibold">Watch it run</span>
-                  <span className="mt-1 text-[0.8125rem] text-[var(--ink-2)]">A booking, start to finish</span>
-                </Link>
+                  <span className="text-[0.9375rem] font-semibold">Book a demo</span>
+                  <span className="mt-1 text-[0.8125rem] text-[var(--ink-2)]">See the board on your own streets</span>
+                </a>
               </div>
             </div>
           </div>

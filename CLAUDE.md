@@ -33,7 +33,7 @@ for middleware):
 - The product site never serves `/go` (proxy returns 404): one copy of every link.
 - Contact, privacy and terms stay on vellon.ca (`src/lib/site.ts`): one vendor,
   one contact form, one set of terms.
-- `globals.css`, `Reveal` and the films are shared with go.vellon.ca, whose
+- `globals.css` and `Reveal` are shared with go.vellon.ca, whose
   look must not change. `.link-draw` sets `display` outside Tailwind's layers,
   so `hidden` on the same element does nothing: hide a wrapper instead.
 
@@ -57,6 +57,9 @@ turn light inside it. **Nothing in the redesign may touch the root layout,
   `openGraph` object (it REPLACES the parent's and drops the share image),
   `robots.ts`/`sitemap.ts` at the app root answer only the product host (the
   proxy sends every go.vellon.ca path to /go).
+- The demo films (old palette) were taken out 2026-11-16 until new ones are
+  made; `components/dispatch/Films.tsx` and `public/media/film-*` are in git
+  history (before that commit) if the player is wanted again.
 - Copy states only what the product does today. No stats, testimonials or
   claims about competitors.
 

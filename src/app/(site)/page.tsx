@@ -2,7 +2,6 @@ import type { Metadata } from "next";
 import Image from "next/image";
 import Link from "next/link";
 import { Reveal, Stagger, StaggerItem } from "@/components/Reveal";
-import { Films } from "@/components/dispatch/Films";
 import { PhoneFrame, PhotoSlot, ScreenFrame } from "@/components/site/Frames";
 import { CONTACT_URL } from "@/lib/site";
 import { DEMO_CAPTION, PHOTOS, SHOTS } from "@/lib/media";
@@ -59,9 +58,9 @@ export default function HomePage() {
             <a href={CONTACT_URL} className="btn btn-accent">
               Book a demo
             </a>
-            <a href="#films" className="btn btn-outline">
-              Watch it run
-            </a>
+            <Link href="/board" className="btn btn-outline">
+              Explore the product
+            </Link>
           </div>
         </Reveal>
 
@@ -200,21 +199,6 @@ export default function HomePage() {
             </StaggerItem>
           ))}
         </Stagger>
-      </section>
-
-      {/* ---------- Films ---------- */}
-      <section id="films" className="mt-28 scroll-mt-20 border-y border-rule bg-surface py-20 md:mt-36 md:py-28">
-        <div className="mx-auto max-w-[77.5rem] px-4 sm:px-6">
-          <Reveal>
-            <h2 className="font-display h-section">Watch it run, end to end.</h2>
-            <p className="mt-5 max-w-[52ch] text-lg leading-relaxed text-fg-2">
-              A booking from the passenger&rsquo;s phone, through the board, to the driver&rsquo;s close-out.
-            </p>
-          </Reveal>
-          <div className="mt-12">
-            <Films />
-          </div>
-        </div>
       </section>
 
       {/* ---------- Closing band ---------- */}

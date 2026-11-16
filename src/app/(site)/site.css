@@ -6,7 +6,7 @@
 
    The shared tokens are redefined inside .site-root, so every existing
    utility (bg-bg, text-fg, border-rule…) and older page here
-   (delete-account, the films) turns light without being rewritten.
+   (delete-account) turns light without being rewritten.
    ------------------------------------------------------------------ */
 
 .site-root {
