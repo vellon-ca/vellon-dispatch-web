@@ -110,7 +110,7 @@ export default function HomePage() {
               </p>
             </div>
             <div className="relative ml-7 mt-7 min-h-[13.75rem] flex-1 overflow-hidden rounded-tl-[14px] border-l border-t border-rule-2 md:ml-8">
-              <Image src={SHOTS.boardRide.src} alt="" fill sizes="(min-width: 768px) 900px, 100vw" className="object-cover object-[62%_38%]" />
+              <Image src={SHOTS.tileAssign.src} alt="" fill unoptimized className="object-cover object-left-top" />
             </div>
           </StaggerItem>
 
@@ -133,7 +133,7 @@ export default function HomePage() {
               </p>
             </div>
             <div className="relative h-[15.5rem] w-[44%] self-end overflow-hidden rounded-t-[22px] border-[6px] border-b-0 border-[var(--ink)] bg-[var(--ink)]">
-              <Image src={SHOTS.pConfirm.src} alt="" fill sizes="200px" className="object-cover object-top" />
+              <Image src={SHOTS.pConfirm.src} alt="" fill unoptimized className="object-cover object-top" />
             </div>
           </StaggerItem>
 
@@ -158,7 +158,7 @@ export default function HomePage() {
               </p>
             </div>
             <div className="relative mx-7 mt-7 min-h-[13.75rem] flex-1 overflow-hidden rounded-t-[14px] border-x border-t border-rule-2 md:mx-8">
-              <Image src={SHOTS.history.src} alt="" fill sizes="(min-width: 768px) 700px, 100vw" className="shot-crop scale-[1.4] origin-top-left" />
+              <Image src={SHOTS.tileHistory.src} alt="" fill unoptimized className="object-cover object-left-top" />
             </div>
           </StaggerItem>
 

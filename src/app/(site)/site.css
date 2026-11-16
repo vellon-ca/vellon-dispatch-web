@@ -130,9 +130,3 @@ body:has(.site-root) {
   outline-offset: 3px;
   border-radius: 6px;
 }
-
-/* A screenshot cropped into a tile: it fills the box from one corner. */
-.site-root .shot-crop {
-  object-fit: cover;
-  object-position: left top;
-}

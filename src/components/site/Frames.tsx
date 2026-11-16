@@ -28,7 +28,7 @@ export function PhoneFrame({
     <div className={`[container-type:inline-size] ${className}`}>
       <div className="rounded-[15cqw] bg-[#0b0b0c] p-[3.2cqw] shadow-[0_30px_60px_-20px_rgba(11,11,12,0.45)]">
       <div className="relative aspect-[440/956] overflow-hidden rounded-[12cqw] bg-[#0b0b0c]">
-        <Image src={src} alt={alt} fill sizes={sizes} priority={priority} className="object-cover object-top" />
+        <Image src={src} alt={alt} fill sizes={sizes} priority={priority} unoptimized className="object-cover object-top" />
         <span
           aria-hidden="true"
           className="absolute left-1/2 top-[1.15%] aspect-[126/37] w-[28.6%] -translate-x-1/2 rounded-full bg-black"
@@ -62,7 +62,7 @@ export function ScreenFrame({
     <div
       className={`overflow-hidden rounded-[18px] border border-rule-2 shadow-[0_40px_80px_-30px_rgba(11,11,12,0.35)] ${className}`}
     >
-      <Image src={src} alt={alt} width={width} height={height} sizes={sizes} priority={priority} className="block h-auto w-full" />
+      <Image src={src} alt={alt} width={width} height={height} sizes={sizes} priority={priority} unoptimized className="block h-auto w-full" />
     </div>
   );
 }
