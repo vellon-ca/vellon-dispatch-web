@@ -1,0 +1,138 @@
+/* ------------------------------------------------------------------
+   The product site's look (dispatch.vellon.ca), scoped to .site-root.
+   go.vellon.ca shares the root layout and globals.css and must not
+   change, so nothing here touches a bare element: everything hangs off
+   .site-root, which only (site)/layout.tsx renders.
+
+   The shared tokens are redefined inside .site-root, so every existing
+   utility (bg-bg, text-fg, border-rule…) and older page here
+   (delete-account, the films) turns light without being rewritten.
+   ------------------------------------------------------------------ */
+
+.site-root {
+  --bg: #ffffff;
+  --surface: #f4f4f2;
+  --surface-2: #ecece9;
+
+  --fg: #0b0b0c;
+  --fg-2: #55555b;
+  --fg-3: #6b6b70;
+
+  --rule: #ececea;
+  --rule-2: #dcdcd8;
+
+  --brass: #2450e6;
+  --brass-dim: #1c3fb8;
+
+  /* The one accent: what you can act on, and nothing else. */
+  --accent: #2450e6;
+  --accent-ink: #ffffff;
+  /* Dark panels (photo bands, tiles). */
+  --ink: #0b0b0c;
+  --ink-2: #b9b9be;
+
+  background: var(--bg);
+  color: var(--fg);
+  font-family: var(--font-inter), system-ui, sans-serif;
+}
+
+/* The page behind the root (overscroll, short pages) matches it. */
+body:has(.site-root) {
+  background: #ffffff;
+}
+
+.site-root ::selection {
+  background: var(--accent);
+  color: #fff;
+}
+
+.site-root .font-display {
+  font-family: var(--font-inter-tight), var(--font-inter), system-ui, sans-serif;
+  letter-spacing: -0.03em;
+}
+
+.site-root .h-hero {
+  font-size: clamp(2.75rem, 7vw, 5.75rem);
+  line-height: 0.98;
+  letter-spacing: -0.035em;
+  font-weight: 700;
+}
+
+.site-root .h-section {
+  font-size: clamp(2.125rem, 4.4vw, 3.5rem);
+  line-height: 1.02;
+  font-weight: 700;
+}
+
+.site-root .h-page {
+  font-size: clamp(2.5rem, 5.6vw, 4.5rem);
+  line-height: 1;
+  letter-spacing: -0.035em;
+  font-weight: 700;
+}
+
+/* Buttons: pill, one primary (accent), one dark, one outline. */
+.site-root .btn {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: 0.5rem;
+  min-height: 44px;
+  padding: 0.75rem 1.5rem;
+  border-radius: 999px;
+  font-weight: 600;
+  font-size: 0.9375rem;
+  transition: background-color 0.2s, color 0.2s, border-color 0.2s, transform 0.2s;
+}
+.site-root .btn:active {
+  transform: translateY(1px);
+}
+.site-root .btn-accent {
+  background: var(--accent);
+  color: var(--accent-ink);
+}
+.site-root .btn-accent:hover {
+  background: #1c3fb8;
+}
+.site-root .btn-dark {
+  background: var(--ink);
+  color: #fff;
+}
+.site-root .btn-dark:hover {
+  background: #2a2a2e;
+}
+.site-root .btn-light {
+  background: #fff;
+  color: var(--ink);
+}
+.site-root .btn-light:hover {
+  background: #ececea;
+}
+.site-root .btn-outline {
+  border: 1px solid var(--rule-2);
+  color: var(--fg);
+}
+.site-root .btn-outline:hover {
+  border-color: var(--fg);
+}
+
+.site-root .link-arrow {
+  font-weight: 600;
+  border-bottom: 1.5px solid currentColor;
+  padding-bottom: 2px;
+}
+.site-root .link-arrow:hover {
+  color: var(--accent);
+}
+
+.site-root :focus-visible {
+  outline: 2px solid var(--accent);
+  outline-offset: 3px;
+  border-radius: 6px;
+}
+
+/* A screenshot cropped into a tile: it fills the box from one corner. */
+.site-root .shot-crop {
+  object-fit: cover;
+  object-position: left top;
+}

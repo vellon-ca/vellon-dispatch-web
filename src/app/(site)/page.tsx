@@ -1,332 +1,238 @@
 import type { Metadata } from "next";
+import Image from "next/image";
 import Link from "next/link";
 import { Reveal, Stagger, StaggerItem } from "@/components/Reveal";
-import { CTA } from "@/components/CTA";
-import { DispatchLoop } from "@/components/dispatch/DispatchLoop";
-import { SurfacePair } from "@/components/dispatch/SurfacePair";
 import { Films } from "@/components/dispatch/Films";
-import { CONTACT_URL, DASHBOARD_URL } from "@/lib/site";
+import { PhoneFrame, PhotoSlot, ScreenFrame } from "@/components/site/Frames";
+import { CONTACT_URL } from "@/lib/site";
+import { DEMO_CAPTION, PHOTOS, SHOTS } from "@/lib/media";
 
 export const metadata: Metadata = {
-  title: "Vellon Dispatch — the operating platform for modern taxi fleets",
-  description:
-    "The operating platform for modern taxi fleets — the board, the cars, the fares, and a record of every ride that outlives the shift.",
-  openGraph: {
-    title: "Vellon Dispatch",
-    description:
-      "The operating platform for modern taxi fleets — the board, the cars, the fares, and a record of every ride.",
-    url: "https://dispatch.vellon.ca",
-  },
+  alternates: { canonical: "/" },
 };
 
-const SPEC = [
-  { term: "Built for", detail: "Taxi and livery fleets, 3 cars to 300" },
-  { term: "Surfaces", detail: "Dispatch board, passenger app, driver app" },
-  { term: "What it costs", detail: "A share of fares — the same on cash and card" },
+const FACTS = [
+  { term: "Built for", detail: "Taxi fleets, 3 cars to 300" },
+  { term: "One system", detail: "Board, passenger app, driver app" },
+  { term: "What it costs", detail: "A share of fares, the same on cash and card" },
 ];
 
-const SURFACES = [
+const APPS = [
   {
-    index: "01",
+    href: "/board",
+    who: "For dispatch",
     name: "The board",
-    body: "Every car and every ride on one screen. Auto-assign takes the nearest free driver by real drive time, and dispatch can override it at any point in the ride.",
+    body: "Every car and every ride on one screen, with override at any point in the ride.",
   },
   {
-    index: "02",
+    href: "/passenger-app",
+    who: "For riders",
     name: "The passenger app",
-    body: "Booking with the fare known up front, the driver, car and plate on screen before pickup, and the car moving live on the map. Card or cash, scheduled or now.",
+    body: "Book now or later, pay by card or cash, and watch the car arrive live.",
   },
   {
-    index: "03",
+    href: "/driver-app",
+    who: "For drivers",
     name: "The driver app",
-    body: "Offers with a countdown, turn-by-turn to the pickup, and a close-out that captures the card automatically or takes the cash figure in two taps.",
+    body: "Offers with a countdown, directions to the pickup, and a two-tap close-out.",
   },
 ];
 
-const TERMS = [
-  {
-    index: "01",
-    title: "The same rate on cash and card",
-    body: "Card fares are collected at the end of the ride; cash is invoiced monthly at the identical rate — so no one has any reason to call a card ride cash.",
-  },
-  {
-    index: "02",
-    title: "Nothing per vehicle, nothing per seat",
-    body: "Add a car in the summer and take it off in the winter. The cost moves with the work, not with the size of the yard.",
-  },
-  {
-    index: "03",
-    title: "Card money lands on its own",
-    body: "Fares settle to the fleet's own account on a schedule, with the platform's share taken at the time of the ride. No invoicing chase, no month-end reconciliation.",
-  },
-];
-
-export default function DispatchPage() {
+export default function HomePage() {
   return (
     <>
       {/* ---------- Hero ---------- */}
-      <section className="pt-32 pb-14 md:pt-40 md:pb-20">
-        <div className="mx-auto max-w-[86rem] px-6 md:px-10">
-          {/* Product masthead. The name of the product, and beside it the two
-              doors into it — the same pair, under the same labels, as the
-              closing band. A fleet arriving to start and a dispatcher arriving
-              to work both find their way in without reaching the fold. Kept at
-              label scale on purpose: it's a tier above the hero actions, not a
-              third peer inside them, so "Book a demo" stays the primary ask. */}
-          <Reveal>
-            <div className="flex flex-wrap items-baseline justify-between gap-x-10 gap-y-4 border-b border-rule pb-4">
-              <p className="label">Vellon Dispatch</p>
-              <div className="flex flex-wrap items-center gap-x-7 gap-y-3">
-                <Link
-                  href={CONTACT_URL}
-                  className="group inline-flex items-center gap-2 border-b border-fg pb-[3px] text-[0.8125rem] font-semibold text-fg"
-                >
-                  Set up your fleet
-                  <span className="transition-transform duration-400 group-hover:translate-x-[3px]">
-                    &rarr;
-                  </span>
-                </Link>
-                <a
-                  href={DASHBOARD_URL}
-                  target="_blank"
-                  rel="noopener noreferrer"
-                  className="link-draw text-[0.8125rem] font-medium text-fg-2 transition-colors hover:text-fg"
-                >
-                  Sign in to your board
-                  <span aria-hidden className="ml-1 text-fg-3">
-                    &#8599;
-                  </span>
-                </a>
-              </div>
-            </div>
-          </Reveal>
-
-          <div className="mt-12 grid grid-cols-1 items-end gap-x-0 gap-y-10 lg:grid-cols-[minmax(0,1fr)_20rem] lg:gap-x-16">
-            <Reveal>
-              <h1 className="display display-xl max-w-[15ch]">
-                Run the whole fleet from one screen.
-              </h1>
-              <p className="lede mt-7 max-w-[48ch] text-pretty">
-                The operating platform for modern taxi fleets — the board, the
-                cars, the fares, and a record of every ride that outlives the
-                shift.
-              </p>
-              <div className="mt-10 flex flex-wrap items-center gap-x-8 gap-y-4">
-                <Link
-                  href={CONTACT_URL}
-                  className="group inline-flex items-center gap-2 border-b border-fg pb-1 text-sm font-semibold text-fg"
-                >
-                  Book a demo
-                  <span className="transition-transform duration-400 group-hover:translate-x-1">
-                    &rarr;
-                  </span>
-                </Link>
-                <a
-                  href="#films"
-                  className="link-draw text-sm text-fg-2 transition-colors hover:text-fg"
-                >
-                  Watch the films
-                </a>
-              </div>
-            </Reveal>
-
-            <Reveal delay={0.1}>
-              <dl className="grid grid-cols-1">
-                {SPEC.map((s) => (
-                  <div key={s.term} className="border-t border-rule py-3.5">
-                    <dt className="label">{s.term}</dt>
-                    <dd className="mt-1 text-[0.875rem] text-fg-2">{s.detail}</dd>
-                  </div>
-                ))}
-              </dl>
-            </Reveal>
+      <section className="mx-auto max-w-[77.5rem] px-4 pt-16 text-center sm:px-6 md:pt-24">
+        <Reveal>
+          <p className="inline-flex items-center gap-2 rounded-full border border-rule-2 px-3.5 py-1.5 text-[0.8125rem] text-fg-2">
+            <span aria-hidden="true" className="h-[7px] w-[7px] rounded-full bg-[#1f9d55]" />
+            Dispatch, passenger and driver apps in one system
+          </p>
+          <h1 className="font-display h-hero mx-auto mt-7 max-w-[14ch] text-balance">
+            Run the whole fleet from one screen.
+          </h1>
+          <p className="mx-auto mt-6 max-w-[46ch] text-lg leading-relaxed text-fg-2 text-pretty md:text-[1.1875rem]">
+            The board, the cars, the fares, and a record of every ride that outlives the shift.
+            Taxi dispatch software for fleets of 3 cars to 300.
+          </p>
+          <div className="mt-9 flex flex-wrap justify-center gap-3">
+            <a href={CONTACT_URL} className="btn btn-accent">
+              Book a demo
+            </a>
+            <a href="#films" className="btn btn-outline">
+              Watch it run
+            </a>
           </div>
+        </Reveal>
 
-          <Reveal delay={0.18} className="mt-14">
-            <figure>
-              <video
-                src="/media/board.mp4"
-                poster="/media/board.jpg"
-                muted
-                loop
-                autoPlay
-                playsInline
-                className="block h-auto w-full border border-rule-2 bg-surface"
-              />
-              <figcaption className="label mt-3 text-[0.625rem]">
-                The board · recorded in a demonstration environment, figures
-                illustrative
-              </figcaption>
-            </figure>
-          </Reveal>
-        </div>
+        <Reveal delay={0.15} className="relative mx-auto mt-16 max-w-[70rem] pb-6 md:mt-20 md:pb-10">
+          <ScreenFrame {...SHOTS.board} priority />
+          <PhoneFrame
+            {...SHOTS.booking}
+            priority
+            className="absolute -bottom-2 -left-2 w-[24%] min-w-[96px] md:-left-6 md:w-[22%]"
+          />
+          <PhoneFrame
+            {...SHOTS.driverOnline}
+            priority
+            className="absolute -bottom-2 -right-2 w-[24%] min-w-[96px] md:-right-6 md:w-[22%]"
+          />
+        </Reveal>
+        <p className="mt-6 text-xs text-fg-3">{DEMO_CAPTION}</p>
       </section>
 
-      {/* ---------- FIG. 02 ---------- */}
-      <section className="border-t border-rule bg-surface py-20 md:py-28">
-        <div className="mx-auto max-w-[86rem] px-6 md:px-10">
-          <DispatchLoop>
-            <p className="label">Fig. 02 — the dispatch loop</p>
-            <h2 className="display display-lg mt-4">
-              A ride is a loop, and paper never closes it.
-            </h2>
-            <p className="lede mt-6 text-pretty">
-              A call comes in. The board places it, a car takes it, the ride
-              runs and the fare settles. Then the record lands back on the
-              board — searchable, printable, provable. That last leg is the one
-              a paper book has never been able to do.
-            </p>
-          </DispatchLoop>
-        </div>
+      {/* ---------- Facts ---------- */}
+      <section className="mx-auto mt-12 max-w-[77.5rem] px-4 sm:px-6">
+        <dl className="grid grid-cols-1 border-y border-rule md:grid-cols-3">
+          {FACTS.map((f) => (
+            <div key={f.term} className="px-2 py-6 md:py-7">
+              <dt className="text-[0.8125rem] text-fg-3">{f.term}</dt>
+              <dd className="mt-1.5 text-lg font-semibold">{f.detail}</dd>
+            </div>
+          ))}
+        </dl>
       </section>
 
-      {/* ---------- Three surfaces ---------- */}
-      <section className="border-t border-rule py-20 md:py-28">
-        <div className="mx-auto max-w-[86rem] px-6 md:px-10">
-          <Reveal className="grid grid-cols-12 gap-y-5 pb-10 md:pb-14">
-            <p className="label col-span-12 md:col-span-3">Three surfaces</p>
-            <div className="col-span-12 md:col-span-6 md:col-start-4">
-              <h2 className="display display-lg">
-                One system, seen from three sides.
-              </h2>
-              <p className="lede mt-6 max-w-[46ch] text-pretty">
-                Dispatch works a board. Passengers use an app that looks like
-                every other app they have. Drivers get offers, navigation and a
-                close-out that handles cash without a calculator.
+      {/* ---------- Bento ---------- */}
+      <section className="mx-auto max-w-[77.5rem] px-4 pt-24 sm:px-6 md:pt-32">
+        <Reveal>
+          <h2 className="font-display h-section max-w-[18ch] text-balance">
+            Everything a dispatcher does, in one place.
+          </h2>
+        </Reveal>
+
+        <Stagger className="mt-12 grid auto-rows-[minmax(18.75rem,auto)] grid-cols-1 gap-4 md:grid-cols-3">
+          <StaggerItem className="flex flex-col overflow-hidden rounded-3xl bg-surface md:col-span-2">
+            <div className="px-7 pt-7 md:px-8 md:pt-8">
+              <h3 className="text-[1.375rem] font-semibold tracking-[-0.01em]">Auto-assign by real drive time</h3>
+              <p className="mt-2 max-w-[48ch] leading-relaxed text-fg-2">
+                The nearest free driver gets the ride, measured by road, not as the crow flies.
+                Dispatch can override at any point.
               </p>
             </div>
-          </Reveal>
+            <div className="relative ml-7 mt-7 min-h-[13.75rem] flex-1 overflow-hidden rounded-tl-[14px] border-l border-t border-rule-2 md:ml-8">
+              <Image src={SHOTS.board.src} alt="" fill sizes="(min-width: 768px) 700px, 100vw" className="shot-crop scale-[1.6] origin-top-left" />
+            </div>
+          </StaggerItem>
 
-          <Stagger className="border-t border-rule">
-            {SURFACES.map((s) => (
-              <StaggerItem key={s.index}>
-                <div className="grid grid-cols-12 items-baseline gap-x-4 gap-y-2 border-b border-rule px-1 py-7 md:py-9">
-                  <span className="numeral col-span-2 text-sm text-fg-3 md:col-span-1">
-                    {s.index}
-                  </span>
-                  <span className="display display-md col-span-10 md:col-span-4">
-                    {s.name}
-                  </span>
-                  <span className="col-span-12 max-w-[52ch] text-pretty text-[0.9375rem] leading-relaxed text-fg-2 md:col-span-7 md:col-start-6">
-                    {s.body}
-                  </span>
-                </div>
-              </StaggerItem>
-            ))}
-          </Stagger>
+          <StaggerItem className="flex flex-col justify-between rounded-3xl bg-[var(--ink)] p-7 text-white md:p-8">
+            <svg aria-hidden="true" width="28" height="28" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.6">
+              <rect x="2" y="5" width="20" height="14" rx="2" />
+              <path d="M2 10h20" />
+            </svg>
+            <div className="mt-10">
+              <h3 className="text-[1.375rem] font-semibold">Same rate on cash and card</h3>
+              <p className="mt-2 leading-relaxed text-[var(--ink-2)]">No one has a reason to call a card ride cash.</p>
+            </div>
+          </StaggerItem>
 
-          <SurfacePair />
-        </div>
-      </section>
-
-      {/* ---------- The record ---------- */}
-      <section className="border-t border-rule bg-surface py-20 md:py-28">
-        <div className="mx-auto max-w-[86rem] px-6 md:px-10">
-          <Reveal className="grid grid-cols-12 gap-y-5 pb-10 md:pb-14">
-            <p className="label col-span-12 md:col-span-3">The record</p>
-            <div className="col-span-12 md:col-span-6 md:col-start-4">
-              <h2 className="display display-lg">The book they&rsquo;ve never had.</h2>
-              <p className="lede mt-6 max-w-[46ch] text-pretty">
-                A fleet running on paper can&rsquo;t answer simple questions.
-                Who drove that fare on the 4th? What did we take last month?
-                Did that ride happen at all? Every ride Dispatch handles is
-                written down the moment it closes, and stays queryable,
-                exportable and printable long after the shift.
+          <StaggerItem className="flex overflow-hidden rounded-3xl bg-surface pl-7 pt-7 md:pl-8 md:pt-8">
+            <div className="flex-1 pr-4">
+              <h3 className="text-[1.375rem] font-semibold">Fare known up front</h3>
+              <p className="mt-2 leading-relaxed text-fg-2">
+                Passengers see the price, the driver, the car and the plate before pickup.
               </p>
             </div>
-          </Reveal>
+            <div className="relative h-[15.5rem] w-[44%] self-end overflow-hidden rounded-t-[22px] border-[6px] border-b-0 border-[var(--ink)] bg-[var(--ink)]">
+              <Image src={SHOTS.booking.src} alt="" fill sizes="200px" className="object-cover object-top" />
+            </div>
+          </StaggerItem>
 
-          <Reveal delay={0.1}>
-            <figure>
-              {/* eslint-disable-next-line @next/next/no-img-element */}
-              <img
-                src="/media/records.jpg"
-                alt="The ride history view: every ride grouped by month, with date, passenger, driver, pickup, drop-off, fare, status and payment, and a total per month"
-                className="block h-auto w-full border border-rule-2"
-              />
-              <figcaption className="label mt-3 text-[0.625rem]">
-                Ride history, grouped by month · recorded in a demonstration
-                environment, figures illustrative
-              </figcaption>
-            </figure>
-          </Reveal>
-        </div>
-      </section>
+          <StaggerItem className="overflow-hidden rounded-3xl md:col-span-2">
+            <PhotoSlot {...PHOTOS.nightCity} className="h-full min-h-[20rem]" sizes="(min-width: 768px) 800px, 100vw">
+              <div className="flex h-full min-h-[20rem] flex-col justify-end p-8 text-white md:p-9">
+                <h3 className="font-display max-w-[16ch] text-[2rem] font-bold leading-tight md:text-[2.125rem]">
+                  Built for fleets that never close.
+                </h3>
+                <p className="mt-2.5 max-w-[46ch] leading-relaxed text-[#c9ccd2]">
+                  Rides booked weeks ahead are released to the right driver at the right moment, day or night.
+                </p>
+              </div>
+            </PhotoSlot>
+          </StaggerItem>
 
-      {/* ---------- Money ---------- */}
-      <section className="border-t border-rule py-20 md:py-28">
-        <div className="mx-auto max-w-[86rem] px-6 md:px-10">
-          <Reveal className="grid grid-cols-12 gap-y-5 pb-10 md:pb-14">
-            <p className="label col-span-12 md:col-span-3">How the money works</p>
-            <div className="col-span-12 md:col-span-6 md:col-start-4">
-              <h2 className="display display-lg">
-                No licence fee, no charge per car.
-              </h2>
-              <p className="lede mt-6 max-w-[46ch] text-pretty">
-                Vellon takes a share of the fares the platform handles. If the
-                fleet has a quiet month, so do we.
+          <StaggerItem className="flex flex-col overflow-hidden rounded-3xl bg-surface md:col-span-2">
+            <div className="px-7 pt-7 md:px-8 md:pt-8">
+              <h3 className="text-[1.375rem] font-semibold">The book they&rsquo;ve never had</h3>
+              <p className="mt-2 max-w-[52ch] leading-relaxed text-fg-2">
+                Every ride, fare and driver, kept and searchable. Export a month to PDF or CSV in one click.
               </p>
             </div>
-          </Reveal>
+            <div className="relative mx-7 mt-7 min-h-[13.75rem] flex-1 overflow-hidden rounded-t-[14px] border-x border-t border-rule-2 md:mx-8">
+              <Image src={SHOTS.records.src} alt="" fill sizes="(min-width: 768px) 700px, 100vw" className="shot-crop scale-[1.4] origin-top-left" />
+            </div>
+          </StaggerItem>
 
-          <Stagger className="grid grid-cols-1 gap-x-10 gap-y-12 md:grid-cols-3">
-            {TERMS.map((t) => (
-              <StaggerItem key={t.index}>
-                <div className="border-t border-rule-2 pt-6">
-                  <span className="numeral text-sm text-brass">{t.index}</span>
-                  <h3 className="display mt-4 text-[1.45rem] leading-tight">
-                    {t.title}
-                  </h3>
-                  <p className="mt-3 max-w-[38ch] text-pretty text-[0.9375rem] leading-relaxed text-fg-2">
-                    {t.body}
-                  </p>
-                </div>
-              </StaggerItem>
-            ))}
-          </Stagger>
-        </div>
+          <StaggerItem className="flex flex-col justify-between rounded-3xl bg-[var(--accent)] p-7 text-white md:p-8">
+            <svg aria-hidden="true" width="28" height="28" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.6">
+              <path d="M12 2v20M2 12h20" />
+            </svg>
+            <div className="mt-10">
+              <h3 className="text-[1.375rem] font-semibold">Nothing per vehicle</h3>
+              <p className="mt-2 leading-relaxed text-[#dce4ff]">
+                Add a car in summer, take it off in winter. The cost moves with the work.
+              </p>
+            </div>
+          </StaggerItem>
+        </Stagger>
+      </section>
+
+      {/* ---------- Three apps ---------- */}
+      <section className="mx-auto max-w-[77.5rem] px-4 pt-28 sm:px-6 md:pt-36">
+        <Reveal className="flex flex-wrap items-end justify-between gap-6">
+          <h2 className="font-display h-section max-w-[14ch]">Three apps. One system.</h2>
+          <Link href="/board" className="link-arrow">
+            Explore the product &rarr;
+          </Link>
+        </Reveal>
+        <Stagger className="mt-12 grid grid-cols-1 gap-4 md:grid-cols-3">
+          {APPS.map((a) => (
+            <StaggerItem key={a.href}>
+              <Link
+                href={a.href}
+                className="group block h-full rounded-3xl border border-rule p-7 transition-colors hover:border-rule-2 hover:bg-surface"
+              >
+                <p className="text-[0.8125rem] text-fg-3">{a.who}</p>
+                <h3 className="mt-1.5 text-2xl font-semibold">{a.name}</h3>
+                <p className="mt-2.5 leading-relaxed text-fg-2">{a.body}</p>
+                <span className="mt-6 inline-block font-semibold transition-transform group-hover:translate-x-1">&rarr;</span>
+              </Link>
+            </StaggerItem>
+          ))}
+        </Stagger>
       </section>
 
       {/* ---------- Films ---------- */}
-      <section id="films" className="border-t border-rule bg-surface py-20 md:py-28">
-        <div className="mx-auto max-w-[86rem] px-6 md:px-10">
-          <Reveal className="grid grid-cols-12 gap-y-5 pb-10 md:pb-14">
-            <p className="label col-span-12 md:col-span-3">The films</p>
-            <div className="col-span-12 md:col-span-6 md:col-start-4">
-              <h2 className="display display-lg">Watch it end to end.</h2>
-              <p className="lede mt-6 max-w-[46ch] text-pretty">
-                Three short films, one per surface, cut from a single scenario.
-                Sound on for the narration.
-              </p>
-            </div>
-          </Reveal>
-
-          <Reveal delay={0.08}>
-            <Films />
-            <p className="label mt-6 text-[0.625rem]">
-              All three recorded in a demonstration environment. Figures
-              illustrative.
+      <section id="films" className="mt-28 scroll-mt-20 border-y border-rule bg-surface py-20 md:mt-36 md:py-28">
+        <div className="mx-auto max-w-[77.5rem] px-4 sm:px-6">
+          <Reveal>
+            <h2 className="font-display h-section">Watch it run, end to end.</h2>
+            <p className="mt-5 max-w-[52ch] text-lg leading-relaxed text-fg-2">
+              A booking from the passenger&rsquo;s phone, through the board, to the driver&rsquo;s close-out.
             </p>
           </Reveal>
+          <div className="mt-12">
+            <Films />
+          </div>
         </div>
       </section>
 
-      {/* The two account doors, at the end rather than the top: getting set up
-          still goes through us, and a fleet already running Dispatch is
-          signing in to an app that lives off this site. */}
-      <CTA
-        eyebrow="Get started"
-        title="See it running on your own map."
-        body="Half an hour, your streets, your fares. We'll set the board up with your pickup points before the call."
-        actions={[
-          { label: "Set up your fleet", href: CONTACT_URL, external: true },
-          {
-            label: "Sign in to your board",
-            href: DASHBOARD_URL,
-            external: true,
-          },
-        ]}
-      />
+      {/* ---------- Closing band ---------- */}
+      <section className="mx-auto max-w-[77.5rem] px-4 pt-28 sm:px-6 md:pt-36">
+        <Reveal>
+          <PhotoSlot {...PHOTOS.aerialRoad} className="rounded-[2rem]">
+            <div className="flex min-h-[27.5rem] flex-col items-center justify-center px-6 py-12 text-center text-white">
+              <h2 className="font-display text-[clamp(2.25rem,5vw,4rem)] font-bold leading-none">See it run your fleet.</h2>
+              <p className="mx-auto mt-4 max-w-[40ch] text-[1.0625rem] text-[#c9ccd2]">
+                Tell us about your fleet and we will show you the board on your own streets.
+              </p>
+              <a href={CONTACT_URL} className="btn btn-light mt-8">
+                Book a demo
+              </a>
+            </div>
+          </PhotoSlot>
+        </Reveal>
+      </section>
     </>
   );
 }
