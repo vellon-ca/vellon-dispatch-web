@@ -2,6 +2,7 @@ import type { Metadata } from "next";
 import { Inter } from "next/font/google";
 import "./site.css";
 import { SiteNav } from "@/components/site/SiteNav";
+import { LINKEDIN_URL } from "@/lib/site";
 import { SiteFooter } from "@/components/site/SiteFooter";
 
 /* The product site's own font. The root layout (shared with go.vellon.ca)
@@ -36,7 +37,7 @@ const structuredData = {
       name: "Vellon",
       legalName: "Vellon Inc.",
       url: "https://vellon.ca",
-      sameAs: ["https://www.linkedin.com/company/vellon-inc"],
+      sameAs: [LINKEDIN_URL],
     },
     {
       "@type": "SoftwareApplication",
