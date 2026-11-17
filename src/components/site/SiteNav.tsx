@@ -109,6 +109,7 @@ export function SiteNav() {
   const productActive = PRODUCT_PAGES.some((p) => p.href === pathname);
 
   return (
+    <>
     <header
       className={`sticky top-0 z-50 transition-colors duration-300 ${
         scrolled || productOpen
@@ -212,14 +213,19 @@ export function SiteNav() {
         </div>
       </div>
 
-      {/* Phone sheet */}
+    </header>
+
+      {/* Phone sheet. A SIBLING of the header, never inside it: once scrolled
+          the header has backdrop-blur, and an element with backdrop-filter
+          becomes the containing block for its position:fixed descendants, so
+          a sheet inside it would fill only the 70px header. */}
       <div
         id="site-sheet"
         hidden={!sheetOpen}
         role="dialog"
         aria-modal="true"
         aria-label="Menu"
-        className="fixed inset-0 z-[60] flex flex-col bg-white lg:hidden"
+        className="fixed inset-0 z-[60] flex h-dvh flex-col bg-white lg:hidden"
       >
         <div className="flex items-center justify-between border-b border-rule px-4 py-3.5 sm:px-6">
           <Wordmark />
@@ -257,6 +263,6 @@ export function SiteNav() {
           </a>
         </div>
       </div>
-    </header>
+    </>
   );
 }
