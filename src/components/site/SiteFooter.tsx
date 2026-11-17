@@ -1,6 +1,7 @@
 import Link from "next/link";
 import { PRODUCT_PAGES, TOP_PAGES } from "@/lib/nav";
-import { DASHBOARD_URL, VELLON_URL } from "@/lib/site";
+import { DASHBOARD_URL, LINKEDIN_URL, VELLON_URL } from "@/lib/site";
+import { LinkedInIcon } from "./LinkedInIcon";
 
 export function SiteFooter() {
   return (
@@ -42,9 +43,18 @@ export function SiteFooter() {
           <Link href="/terms" className="hover:text-[var(--accent)]">Terms</Link>
         </div>
       </div>
-      <p className="mt-16 border-t border-rule pt-6 text-[0.8125rem] text-fg-3">
-        © {new Date().getFullYear()} Vellon Inc.
-      </p>
+      <div className="mt-16 flex items-center justify-between border-t border-rule pt-6 text-[0.8125rem] text-fg-3">
+        <p>© {new Date().getFullYear()} Vellon Inc.</p>
+        <a
+          href={LINKEDIN_URL}
+          target="_blank"
+          rel="noopener noreferrer"
+          aria-label="Vellon on LinkedIn"
+          className="hover:text-[var(--accent)]"
+        >
+          <LinkedInIcon className="h-4 w-4" />
+        </a>
+      </div>
     </footer>
   );
 }

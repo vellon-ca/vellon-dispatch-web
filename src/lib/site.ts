@@ -6,6 +6,9 @@ export const CONTACT_URL = `${VELLON_URL}/contact`;
 export const PRIVACY_URL = `${VELLON_URL}/privacy`;
 export const TERMS_URL = `${VELLON_URL}/terms`;
 
+/* Vellon's LinkedIn page: the footer link and the structured data's sameAs. */
+export const LINKEDIN_URL = "https://www.linkedin.com/company/vellon-inc";
+
 /* The dispatch board. Staff only: nothing a passenger opens may point here. */
 export const DASHBOARD_URL = "https://dashboard.vellon.ca";
 
