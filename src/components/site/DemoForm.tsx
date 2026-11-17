@@ -54,9 +54,15 @@ export function DemoForm() {
     if (!last) return goTo(step + 1);
     setError(null);
     startTransition(async () => {
-      const res = await sendDemoRequest({ answers, website: trap.current?.value, startedAt: startedAt.current });
-      if (res.ok) setDone(true);
-      else setError(res.error);
+      // A throw is the request itself failing: offline, or the firewall's rate
+      // limit answering 429 before the action runs.
+      try {
+        const res = await sendDemoRequest({ answers, website: trap.current?.value, startedAt: startedAt.current });
+        if (res.ok) setDone(true);
+        else setError(res.error);
+      } catch {
+        setError("We couldn't send this just now. Please try again in a while, or email us at hello@vellon.ca.");
+      }
     });
   };
 

@@ -35,14 +35,22 @@ export function ContactForm() {
         const fd = new FormData(e.currentTarget);
         setError(null);
         startTransition(async () => {
-          const res = await sendContact({
+          // A throw is the request itself failing: offline, or the firewall's
+          // rate limit answering 429 before the action runs.
+          let res;
+          try {
+            res = await sendContact({
             name: String(fd.get("name") ?? ""),
             email: String(fd.get("email") ?? ""),
             company: String(fd.get("company") ?? ""),
             message: String(fd.get("message") ?? ""),
             website: String(fd.get("website") ?? ""),
             startedAt: startedAt.current,
-          });
+            });
+          } catch {
+            setError("We couldn't send this just now. Please try again in a while, or email us at hello@vellon.ca.");
+            return;
+          }
           if (res.ok) setDone(true);
           else setError(res.error);
         });
