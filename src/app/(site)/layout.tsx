@@ -36,6 +36,7 @@ const structuredData = {
       name: "Vellon",
       legalName: "Vellon Inc.",
       url: "https://vellon.ca",
+      sameAs: ["https://www.linkedin.com/company/vellon-inc"],
     },
     {
       "@type": "SoftwareApplication",
