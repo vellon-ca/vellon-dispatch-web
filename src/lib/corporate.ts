@@ -156,7 +156,10 @@ export type StatementRow = {
   issued_at: string;
   ride_count: number;
   total_cents: number;
+  /** Recorded payments + the card lines. */
   paid_cents: number;
+  /** Lines already charged to the business's card; never owed. */
+  card_paid_cents?: number;
   last_paid_on: string | null;
   voided_at: string | null;
   void_reason: string | null;
@@ -175,6 +178,10 @@ export type StatementLine = {
   booking_fee_cents: number;
   total_cents: number;
   tax_rate_percent: number | null;
+  /** card = already charged to the business's card (amounts net of any refund at issue). */
+  kind?: "invoice" | "card";
+  refunded_cents?: number;
+  card_last4?: string | null;
 };
 
 export type StatementDetail = {
@@ -194,6 +201,20 @@ export type StatementDetail = {
   lines: StatementLine[];
   payments: { id: string; amount_cents: number; received_on: string; note: string | null }[];
 };
+
+/** "Paid by card" for a month that was all card; "Owing" while only the card
+    lines are paid (nothing has been paid on the rest yet). */
+export function statementStatusLabel(r: Pick<StatementRow, "status" | "total_cents" | "paid_cents" | "card_paid_cents">): string {
+  const card = r.card_paid_cents ?? 0;
+  if (r.status === "paid" && card >= r.total_cents) return "Paid by card";
+  if (r.status === "part_paid" && r.paid_cents <= card) return STATEMENT_STATUS.owing.label;
+  return STATEMENT_STATUS[r.status].label;
+}
+
+/** A card line's mark: "Card ••4242". */
+export function cardMark(l: StatementLine): string | null {
+  return l.kind === "card" ? (l.card_last4 ? `Card ••${l.card_last4}` : "Card") : null;
+}
 
 export function money(cents: number): string {
   return new Intl.NumberFormat("en-CA", { style: "currency", currency: "CAD" }).format(Number(cents) / 100);
@@ -218,7 +239,7 @@ export function statementCsv(d: StatementDetail): string {
     return /[",\r\n]/.test(s) ? `"${s.replace(/"/g, '""')}"` : s;
   };
   const s = d.statement;
-  const head = "Statement,Ride,Pickup,Month,Rider,Team,From,To,Fare,Booking fee,Total,Tax rate";
+  const head = "Statement,Ride,Pickup,Month,Rider,Team,From,To,Fare,Booking fee,Total,Tax rate,Paid by,Refunded";
   const rows = d.lines.map((l) =>
     [
       s.number, l.ride_ref,
@@ -226,6 +247,8 @@ export function statementCsv(d: StatementDetail): string {
       l.ride_month.slice(0, 7), l.rider_name, l.team_name ?? "", l.pickup_address, l.dropoff_address,
       (l.fare_cents / 100).toFixed(2), (l.booking_fee_cents / 100).toFixed(2), (l.total_cents / 100).toFixed(2),
       l.tax_rate_percent == null ? "" : `${Number(l.tax_rate_percent)}%`,
+      l.kind === "card" ? ["Card", l.card_last4].filter(Boolean).join(" ") : "Statement",
+      (l.refunded_cents ?? 0) > 0 ? ((l.refunded_cents ?? 0) / 100).toFixed(2) : "",
     ].map(cell).join(","),
   );
   return "\uFEFF" + [head, ...rows].join("\r\n");

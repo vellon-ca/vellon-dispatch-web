@@ -2,7 +2,7 @@
 
 import { useEffect, useState } from "react";
 import type { SupabaseClient } from "@supabase/supabase-js";
-import { money, monthName, STATEMENT_STATUS, zonedDate, type ManagedAccount, type StatementRow } from "@/lib/corporate";
+import { money, monthName, STATEMENT_STATUS, statementStatusLabel, zonedDate, type ManagedAccount, type StatementRow } from "@/lib/corporate";
 
 type Usage = { used_cents: number; monthly_limit_cents: number | null; month: string; billing_mode: string | null };
 
@@ -113,7 +113,7 @@ export default function Statements({
                     <td>
                       <span className="cp-status">
                         <span className="cp-dot" style={{ background: STATEMENT_STATUS[r.status].color }} />
-                        {STATEMENT_STATUS[r.status].label}
+                        {statementStatusLabel(r)}
                       </span>
                     </td>
                     <td className="cp-num"><button className="cp-link" onClick={() => onOpen(r.id)}>Open</button></td>

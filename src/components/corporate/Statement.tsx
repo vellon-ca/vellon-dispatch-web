@@ -3,7 +3,7 @@
 import { useEffect, useMemo, useState } from "react";
 import type { SupabaseClient } from "@supabase/supabase-js";
 import {
-  money, monthName, STATEMENT_STATUS, statementCsv, zonedDate,
+  cardMark, money, monthName, STATEMENT_STATUS, statementCsv, statementStatusLabel, zonedDate,
   type StatementDetail, type StatementLine,
 } from "@/lib/corporate";
 
@@ -82,6 +82,10 @@ export default function Statement({
   const sum = (ls: StatementLine[], k: "fare_cents" | "booking_fee_cents" | "total_cents") =>
     ls.reduce((a, l) => a + Number(l[k]), 0);
   const owing = Math.max(0, s.total_cents - s.paid_cents);
+  // Card-mode rides (already charged to the business's card) are never owed.
+  const cardPaid = Number(s.card_paid_cents ?? 0);
+  const toPay = s.total_cents - cardPaid;
+  const refunded = d.lines.some((l) => (l.refunded_cents ?? 0) > 0);
   // "Atlantic Time", not a clock reading or a standard/daylight variant.
   const zoneName = new Intl.DateTimeFormat("en-CA", { timeZone: tz, timeZoneName: "longGeneric" })
     .formatToParts(new Date(s.issued_at)).find((p) => p.type === "timeZoneName")?.value;
@@ -123,13 +127,16 @@ export default function Statement({
           <div>
             <div className="cp-doc-k">Total</div><b>{money(s.total_cents)}</b>
             <div className="cp-hint">{s.ride_count} {s.ride_count === 1 ? "ride" : "rides"} · booking fees included</div>
+            {cardPaid > 0 && (
+              <div className="cp-hint" style={{ fontWeight: 600, color: "var(--text)" }}>{toPay === 0 ? "All paid by card · nothing to pay" : `${money(cardPaid)} paid by card · ${money(toPay)} to pay`}</div>
+            )}
           </div>
           <div><div className="cp-doc-k">Payment terms</div><b>{s.payment_terms ?? "—"}</b></div>
           <div>
             <div className="cp-doc-k">Status</div>
             <b className="cp-status" style={{ fontSize: 15 }}>
               <span className="cp-dot" style={{ background: STATEMENT_STATUS[s.status].color }} />
-              {s.status === "owing" || s.status === "part_paid" ? `Owing ${money(owing)}` : STATEMENT_STATUS[s.status].label}
+              {s.status === "owing" || s.status === "part_paid" ? `Owing ${money(owing)}` : statementStatusLabel(s)}
             </b>
           </div>
         </div>
@@ -154,6 +161,18 @@ export default function Statement({
                 <td className="cp-num">{money(s.booking_fees_cents)}</td>
                 <td className="cp-num">{money(s.total_cents)}</td>
               </tr>
+              {cardPaid > 0 && (
+                <>
+                  <tr>
+                    <td colSpan={4}>Paid by card</td>
+                    <td className="cp-num">{money(-cardPaid)}</td>
+                  </tr>
+                  <tr className="cp-total">
+                    <td colSpan={4}>To pay</td>
+                    <td className="cp-num">{money(toPay)}</td>
+                  </tr>
+                </>
+              )}
             </tbody>
           </table>
         </div>
@@ -178,7 +197,10 @@ export default function Statement({
                       <td className="cp-muted">{l.dropoff_address}</td>
                       <td className="cp-num">{money(l.fare_cents)}</td>
                       <td className="cp-num">{money(l.booking_fee_cents)}</td>
-                      <td className="cp-num">{money(l.total_cents)}</td>
+                      <td className="cp-num cp-nowrap">
+                        {cardMark(l) && <span className="cp-chip">{cardMark(l)}{(l.refunded_cents ?? 0) > 0 ? " *" : ""}</span>}{" "}
+                        {money(l.total_cents)}
+                      </td>
                     </tr>
                   ))}
                 </tbody>
@@ -202,6 +224,7 @@ export default function Statement({
         <footer className="cp-doc-foot">
           <span>
             {late && "A ride marked with its month finished late and was not on that month's statement. "}
+            {refunded && "* Net of a refund made before this statement was issued. "}
             Pickup times are {s.company_name}&apos;s local time{zoneName ? ` (${zoneName})` : ""}. Amounts in CAD.
           </span>
           <span>Statement prepared by Vellon for {s.company_name}</span>
