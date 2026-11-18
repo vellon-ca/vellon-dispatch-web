@@ -133,7 +133,18 @@ export default function People({ supabase, account }: { supabase: SupabaseClient
     const q = m.status === "invited"
       ? `Cancel the invite to ${who}?`
       : `Remove ${who} from ${account.account_name}? They can no longer bill rides to the account.`;
-    if (!window.confirm(q)) return;
+    // Their booked rides on the account will need another way to pay
+    // (mgcj-app business-accounts-design.md §14).
+    let extra = "";
+    if (m.status === "active") {
+      const { data } = await supabase.rpc("ba_exit_impact", { p_account: account.account_id, p_member: m.id });
+      const n = (data ?? []).length;
+      if (n > 0)
+        extra = n === 1
+          ? `\n\nThey have 1 booked ride billed to the account. They'll be asked to pay for it another way, or it is cancelled before pickup. Adding them back before then keeps it on the account.`
+          : `\n\nThey have ${n} booked rides billed to the account. They'll be asked to pay for them another way, or they are cancelled before pickup. Adding them back before then keeps them on the account.`;
+    }
+    if (!window.confirm(q + extra)) return;
     await act("ba_staff_decide", { p_member: m.id, p_action: "remove" }, "We couldn't remove them.");
   }
 
