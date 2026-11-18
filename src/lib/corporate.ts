@@ -97,3 +97,102 @@ export function formatPhone(p: string | null): string {
 export function joinLink(slug: string, code: string): string {
   return `https://go.vellon.ca/${slug}/join/${code}`;
 }
+
+/* ── statements ──────────────────────────────────────────────────────────
+   Times are shown on the TAXI COMPANY's clock (the statement carries its
+   zone), never the browser's: a pickup at 11:50 pm on the 31st must read as
+   the 31st wherever the manager is. A month is a calendar DATE ('2026-10-01'),
+   so it is formatted in UTC, where its midnight is still that day. */
+
+export type StatementStatus = "owing" | "part_paid" | "paid" | "void";
+
+export const STATEMENT_STATUS: Record<StatementStatus, { label: string; color: string }> = {
+  owing: { label: "Owing", color: "var(--amber)" },
+  part_paid: { label: "Part paid", color: "var(--amber)" },
+  paid: { label: "Paid", color: "var(--green)" },
+  void: { label: "Withdrawn", color: "var(--text-3)" },
+};
+
+export type StatementRow = {
+  id: string;
+  month: string;
+  number: string;
+  time_zone: string;
+  status: StatementStatus;
+  issued_at: string;
+  ride_count: number;
+  total_cents: number;
+  paid_cents: number;
+  last_paid_on: string | null;
+  voided_at: string | null;
+  void_reason: string | null;
+};
+
+export type StatementLine = {
+  id: string;
+  ride_ref: string | null;
+  pickup_at: string;
+  ride_month: string;
+  rider_name: string;
+  team_name: string | null;
+  pickup_address: string | null;
+  dropoff_address: string | null;
+  fare_cents: number;
+  booking_fee_cents: number;
+  total_cents: number;
+  tax_rate_percent: number | null;
+};
+
+export type StatementDetail = {
+  statement: StatementRow & {
+    account_id: string;
+    account_name: string;
+    payment_terms: string | null;
+    company_name: string;
+    company_address: string | null;
+    company_email: string | null;
+    company_phone: string | null;
+    hst_number: string | null;
+    tax_label: string;
+    fares_cents: number;
+    booking_fees_cents: number;
+  };
+  lines: StatementLine[];
+  payments: { id: string; amount_cents: number; received_on: string; note: string | null }[];
+};
+
+export function money(cents: number): string {
+  return new Intl.NumberFormat("en-CA", { style: "currency", currency: "CAD" }).format(Number(cents) / 100);
+}
+
+export function zonedDate(iso: string, timeZone: string, opts: Intl.DateTimeFormatOptions): string {
+  const d = /^\d{4}-\d{2}-\d{2}$/.test(iso) ? new Date(`${iso}T00:00:00Z`) : new Date(iso);
+  return d.toLocaleString("en-CA", { ...opts, timeZone });
+}
+
+export function monthName(month: string, style: "long" | "short" = "long"): string {
+  return zonedDate(month, "UTC", style === "long" ? { month: "long", year: "numeric" } : { month: "short" });
+}
+
+/* The same columns as the CSV attached to the statement email. A cell a
+   spreadsheet would run as a formula is prefixed with an apostrophe: names and
+   addresses come from riders. */
+export function statementCsv(d: StatementDetail): string {
+  const cell = (v: string | number | null) => {
+    let s = v == null ? "" : String(v);
+    if (/^[=+\-@\t\r]/.test(s)) s = "'" + s;
+    return /[",\r\n]/.test(s) ? `"${s.replace(/"/g, '""')}"` : s;
+  };
+  const s = d.statement;
+  const head = "Statement,Ride,Pickup,Month,Rider,Team,From,To,Fare,Booking fee,Total,Tax rate";
+  const rows = d.lines.map((l) =>
+    [
+      s.number, l.ride_ref,
+      zonedDate(l.pickup_at, s.time_zone, { dateStyle: "medium", timeStyle: "short" }),
+      l.ride_month.slice(0, 7), l.rider_name, l.team_name ?? "", l.pickup_address, l.dropoff_address,
+      (l.fare_cents / 100).toFixed(2), (l.booking_fee_cents / 100).toFixed(2), (l.total_cents / 100).toFixed(2),
+      l.tax_rate_percent == null ? "" : `${Number(l.tax_rate_percent)}%`,
+    ].map(cell).join(","),
+  );
+  return "\uFEFF" + [head, ...rows].join("\r\n");
+}

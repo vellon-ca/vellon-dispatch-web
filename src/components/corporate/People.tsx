@@ -313,7 +313,7 @@ export default function People({ supabase, account }: { supabase: SupabaseClient
           )}
         </section>
         <div className="cp-foot">
-          Rides and Statements open with billing. {account.company_name} can see this list and can add people when you ask them to.
+          {account.company_name}{" "}can see this list and can add people when you ask them to.
         </div>
       </main>
 

@@ -6,17 +6,22 @@ import { corporateClient, type ManagedAccount } from "@/lib/corporate";
 import SignIn from "./SignIn";
 import People from "./People";
 import JoinLink from "./JoinLink";
+import Statements from "./Statements";
+import Statement from "./Statement";
 
-type Tab = "people" | "join";
+type Tab = "people" | "join" | "statements";
 
-export default function Portal() {
+/* initialStatement: opened from the statement email's link
+   (corporate.vellon.ca/statements/<id>), shown once the manager is signed in. */
+export default function Portal({ initialStatement = null }: { initialStatement?: string | null }) {
   const supabase = corporateClient();
   const [session, setSession] = useState<Session | null | undefined>(undefined);
   // Tagged with the user they were loaded for, so a different sign-in never
   // shows the previous person's accounts while its own load is in flight.
   const [loaded, setLoaded] = useState<{ userId: string; list: ManagedAccount[] } | null>(null);
   const [accountId, setAccountId] = useState<string | null>(null);
-  const [tab, setTab] = useState<Tab>("people");
+  const [tab, setTab] = useState<Tab>(initialStatement ? "statements" : "people");
+  const [statementId, setStatementId] = useState<string | null>(initialStatement);
   const [loadError, setLoadError] = useState<string | null>(null);
 
   useEffect(() => {
@@ -96,7 +101,7 @@ export default function Portal() {
           <select
             className="cp-acct"
             value={account.account_id}
-            onChange={(e) => setAccountId(e.target.value)}
+            onChange={(e) => { setAccountId(e.target.value); setStatementId(null); }}
             aria-label="Account"
           >
             {accounts.map((a) => (
@@ -109,8 +114,8 @@ export default function Portal() {
         <nav className="cp-nav">
           <button className={tab === "people" ? "on" : ""} onClick={() => setTab("people")}>People</button>
           <button className={tab === "join" ? "on" : ""} onClick={() => setTab("join")}>Join link</button>
-          <button disabled title="Comes with billing">Rides</button>
-          <button disabled title="Comes with billing">Statements</button>
+          <button disabled title="Coming soon">Rides</button>
+          <button className={tab === "statements" ? "on" : ""} onClick={() => { setTab("statements"); setStatementId(null); }}>Statements</button>
         </nav>
         <div className="cp-me">
           <span>{email}</span>
@@ -119,8 +124,18 @@ export default function Portal() {
       </header>
       {tab === "people" ? (
         <People key={account.account_id} supabase={supabase} account={account} />
-      ) : (
+      ) : tab === "join" ? (
         <JoinLink key={account.account_id} supabase={supabase} account={account} />
+      ) : statementId ? (
+        <Statement
+          key={statementId}
+          supabase={supabase}
+          id={statementId}
+          onBack={() => setStatementId(null)}
+          onAccount={(id) => { if (accounts.some((a) => a.account_id === id)) setAccountId(id); }}
+        />
+      ) : (
+        <Statements key={account.account_id} supabase={supabase} account={account} onOpen={setStatementId} />
       )}
     </>
   );
