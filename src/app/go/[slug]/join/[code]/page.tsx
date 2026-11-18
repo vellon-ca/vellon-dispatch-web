@@ -45,7 +45,7 @@ export default async function JoinLink({ params }: Props) {
       <p className="label">{company.name}</p>
       <h1 className="display mt-3 text-[1.9rem] leading-tight">Join a business account</h1>
       <p className="mt-4 text-[0.9375rem] leading-relaxed text-fg-2">
-        You&rsquo;ve been sent a link to bill work rides with {company.name} to
+        You&rsquo;ve been sent a link to bill work rides with {company.name}{" "}to
         a business account. The business sees only the rides you bill to it,
         never your personal rides.
       </p>

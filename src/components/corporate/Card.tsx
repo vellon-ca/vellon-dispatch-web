@@ -57,6 +57,13 @@ const RETRY_ERRORS: Record<string, string> = {
   forbidden: "You're not a manager of this account any more.",
 };
 
+// Save's own refusals; anything else falls back to RETRY_ERRORS.
+const SAVE_ERRORS: Record<string, string> = {
+  "card.tooManyAttempts": "That's a lot of cards tried in the last hour. Wait a while before trying again.",
+  "card.overBudget": "This card has been declined too many times this month for us to use it. Use a different card.",
+  "card.notSaved": "The card couldn't be saved. Try again, or use a different card.",
+};
+
 export default function Card({
   supabase, account, view, onChanged,
 }: {
@@ -326,7 +333,7 @@ function CardForm({
         body: { action: "setup", account_id: accountId },
       });
       if (setupErr || !setup?.ok) {
-        return setError(RETRY_ERRORS[setup?.code] ?? "We couldn't start saving the card. Try again.");
+        return setError(SAVE_ERRORS[setup?.code] ?? RETRY_ERRORS[setup?.code] ?? "We couldn't start saving the card. Try again.");
       }
       // The key and the project must be from the same environment (test with
       // dev, live with prod); a mismatch would fail inside Stripe.js anyway.
@@ -347,9 +354,7 @@ function CardForm({
         body: { action: "record", account_id: accountId, setup_intent_id: setupIntent.id },
       });
       if (recErr || !rec?.ok) {
-        return setError(rec?.code === "card.notSaved"
-          ? "The card couldn't be saved. Try again, or use a different card."
-          : "We couldn't save the card. Try again.");
+        return setError(SAVE_ERRORS[rec?.code] ?? "We couldn't save the card. Try again.");
       }
       elements.getElement("payment")?.clear();
       const held = rec.due > 0

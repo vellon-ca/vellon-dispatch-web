@@ -105,7 +105,7 @@ export default function ApplyFlow({
         ) : step === "new" ? (
           <>
             <h1>About your organisation</h1>
-            <p>The organisation {company.name} will bill. You&apos;ll use it for accounts with other taxi companies too.</p>
+            <p>The organisation {company.name}{" "}will bill. You&apos;ll use it for accounts with other taxi companies too.</p>
             <OrgForm
               supabase={supabase}
               onCreated={(id, ph) => choose(id, "", ph)}

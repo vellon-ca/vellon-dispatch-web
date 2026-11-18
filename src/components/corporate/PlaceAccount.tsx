@@ -77,7 +77,7 @@ export default function PlaceAccount({
           <>
             <h1>Set up your organisation</h1>
             <p>
-              {account.company_name} set up an account for you. Tell us about the organisation behind it; you&apos;ll use
+              {account.company_name}{" "}set up an account for you. Tell us about the organisation behind it; you&apos;ll use
               it for accounts with other taxi companies too.
             </p>
             <OrgForm supabase={supabase} initialName={account.account_name} onCreated={(id) => attach(id)} />

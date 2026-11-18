@@ -49,7 +49,7 @@ export default function CompanyLanding({
             </div>
           ) : (
             <div className="cp-pub-closed">
-              {company.name} isn&apos;t taking applications online.
+              {company.name}{" "}isn&apos;t taking applications online.
               {company.phone ? ` Contact them at ${company.phone}.` : " Contact them directly."}
             </div>
           )}
