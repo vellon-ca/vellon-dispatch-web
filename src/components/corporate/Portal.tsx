@@ -8,6 +8,7 @@ import People from "./People";
 import JoinLink from "./JoinLink";
 import Statements from "./Statements";
 import Statement from "./Statement";
+import Welcome from "./Welcome";
 
 type Tab = "people" | "join" | "statements";
 
@@ -23,6 +24,10 @@ export default function Portal({ initialStatement = null }: { initialStatement?:
   const [tab, setTab] = useState<Tab>(initialStatement ? "statements" : "people");
   const [statementId, setStatementId] = useState<string | null>(initialStatement);
   const [loadError, setLoadError] = useState<string | null>(null);
+  // The manager's name, tagged with the user it was read for (as `loaded`).
+  // undefined: not read yet; null: never given, so the first visit asks.
+  const [me, setMe] = useState<{ userId: string; name: string | null } | null>(null);
+  const [editingName, setEditingName] = useState(false);
 
   useEffect(() => {
     if (!supabase) return;
@@ -46,11 +51,16 @@ export default function Portal({ initialStatement = null }: { initialStatement?:
       setLoadError(null);
       setLoaded({ userId, list: (data ?? []) as ManagedAccount[] });
     });
+    supabase.rpc("ba_my_manager_name").then(({ data, error }) => {
+      // Unreadable: carry on without asking, rather than block the portal.
+      if (alive) setMe({ userId, name: error ? "" : ((data as string | null) ?? null) });
+    });
     return () => {
       alive = false;
     };
   }, [supabase, userId]);
   const accounts = loaded && loaded.userId === userId ? loaded.list : null;
+  const myName = me && me.userId === userId ? me.name : undefined;
 
   if (!supabase) {
     return (
@@ -92,6 +102,18 @@ export default function Portal({ initialStatement = null }: { initialStatement?:
     );
   }
 
+  if (myName === undefined) return null;
+  if (myName === null || editingName) {
+    return (
+      <Welcome
+        supabase={supabase}
+        current={myName}
+        onSaved={(name) => { setMe({ userId: userId!, name }); setEditingName(false); }}
+        onCancel={myName ? () => setEditingName(false) : undefined}
+      />
+    );
+  }
+
   const account = accounts.find((a) => a.account_id === accountId) ?? accounts[0];
 
   return (
@@ -118,7 +140,9 @@ export default function Portal({ initialStatement = null }: { initialStatement?:
           <button className={tab === "statements" ? "on" : ""} onClick={() => { setTab("statements"); setStatementId(null); }}>Statements</button>
         </nav>
         <div className="cp-me">
-          <span>{email}</span>
+          <button className="cp-link cp-link-muted" onClick={() => setEditingName(true)} title="Change your name">
+            {myName ? `${myName} · ${email}` : email}
+          </button>
           <button className="cp-link cp-link-muted" onClick={signOut}>Sign out</button>
         </div>
       </header>
