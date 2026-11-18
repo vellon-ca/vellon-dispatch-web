@@ -14,11 +14,26 @@ const REASONS: Record<string, string> = {
   bad_email: "That doesn't look like an email address.",
   not_a_manager:
     "This email isn't set up to manage a business account. Ask the taxi company to add you as a manager.",
+  closed: "This taxi company isn't taking applications online right now.",
+  too_many: "Too many tries from here. Wait an hour and try again.",
   email_unavailable:
     "This email is used to sign in to the dispatch dashboard, so it can't manage a business account. Use a different address.",
 };
 
-export default function SignIn({ supabase }: { supabase: SupabaseClient }) {
+/* apply: a taxi company's slug, when signing in from its application link;
+   manager-sign-in then makes a login for someone no company named yet.
+   bare: just the card's contents, for the company page's Apply card. */
+export default function SignIn({
+  supabase,
+  apply,
+  bare = false,
+  intro,
+}: {
+  supabase: SupabaseClient;
+  apply?: string;
+  bare?: boolean;
+  intro?: string;
+}) {
   const [step, setStep] = useState<Step>({ kind: "email" });
   const [email, setEmail] = useState("");
   const [code, setCode] = useState("");
@@ -28,7 +43,7 @@ export default function SignIn({ supabase }: { supabase: SupabaseClient }) {
 
   async function sendCode(address: string) {
     const { data, error: fnError } = await supabase.functions.invoke("manager-sign-in", {
-      body: { email: address },
+      body: apply ? { email: address, apply } : { email: address },
     });
     if (fnError) throw new Error("We couldn't reach the sign-in service. Try again in a moment.");
     if (!data?.ok) throw new Error(REASONS[data?.reason] ?? "Something went wrong. Try again.");
@@ -89,14 +104,13 @@ export default function SignIn({ supabase }: { supabase: SupabaseClient }) {
     }
   }
 
-  return (
-    <div className="cp-auth">
-      <div className="cp-auth-card">
-        <div className="cp-auth-brand">Business accounts</div>
+  const card = (
+      <>
+        {!bare && <div className="cp-auth-brand">Business accounts</div>}
         {step.kind === "email" ? (
           <form onSubmit={onEmail}>
-            <h1>Sign in</h1>
-            <p>For people who manage a business account with a taxi company. We&apos;ll email you a 6-digit code.</p>
+            <h1>{apply ? "Apply" : "Sign in"}</h1>
+            <p>{intro ?? "For people who manage a business account with a taxi company. We'll email you a 6-digit code."}</p>
             <label className="cp-label" htmlFor="cp-email">Work email</label>
             <input
               id="cp-email"
@@ -149,8 +163,13 @@ export default function SignIn({ supabase }: { supabase: SupabaseClient }) {
             </div>
           </form>
         )}
-        <div className="cp-auth-foot">corporate.vellon.ca · Vellon</div>
-      </div>
+        {!bare && <div className="cp-auth-foot">corporate.vellon.ca · Vellon</div>}
+      </>
+  );
+  if (bare) return card;
+  return (
+    <div className="cp-auth">
+      <div className="cp-auth-card">{card}</div>
     </div>
   );
 }

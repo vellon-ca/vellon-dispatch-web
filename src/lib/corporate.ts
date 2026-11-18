@@ -36,7 +36,41 @@ export type ManagedAccount = {
   company_name: string;
   company_slug: string;
   manager_id: string;
+  /** The organisation it sits under; null until its manager first places it. */
+  business_id: string | null;
+  business_name: string | null;
 };
+
+export type Business = {
+  id: string;
+  name: string;
+  billing_address: string | null;
+  contact_phone: string | null;
+  account_count: number;
+};
+
+export type Application = {
+  id: string;
+  business_id: string;
+  business_name: string;
+  company_name: string;
+  company_slug: string;
+  status: "pending" | "approved" | "declined" | "withdrawn";
+  created_at: string;
+  decided_at: string | null;
+  decline_reason: string | null;
+  account_id: string | null;
+};
+
+export type CompanyPage = { name: string; open: boolean; phone: string | null; slug: string };
+
+export const RIDES_PER_MONTH: { value: string; label: string }[] = [
+  { value: "under_20", label: "Fewer than 20" },
+  { value: "20_50", label: "20 to 50" },
+  { value: "50_100", label: "50 to 100" },
+  { value: "100_250", label: "100 to 250" },
+  { value: "over_250", label: "More than 250" },
+];
 
 export type Team = { id: string; name: string };
 
