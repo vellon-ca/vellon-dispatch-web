@@ -258,3 +258,31 @@
 .cp-opt-sub { display: block; font-size: 12px; color: var(--text-2); margin-top: 2px; }
 .cp-auth-card .cp-textarea { min-height: 72px; resize: vertical; font-family: inherit; }
 .cp-auth-card.wide { max-width: 520px; }
+
+/* ── the business's card (Card.tsx) */
+.cp-card-alert { align-items: flex-start; gap: 12px; padding: 14px 18px; }
+.cp-card-alert-body { flex: 1; display: flex; flex-direction: column; gap: 4px; }
+.cp-card-alert-body b { font-size: 14px; }
+.cp-card-alert-act { display: flex; flex-direction: column; align-items: flex-end; gap: 6px; flex-shrink: 0; text-align: right; }
+.cp-card-cols { display: grid; grid-template-columns: 420px minmax(0, 1fr); gap: 20px; align-items: start; }
+.cp-card-pad { padding: 16px 18px; display: flex; flex-direction: column; gap: 12px; font-size: 13px; }
+.cp-card-on-file { display: flex; align-items: center; gap: 12px; }
+.cp-card-on-file b { font-size: 15px; }
+.cp-card-brand { width: 46px; height: 30px; border-radius: 6px; background: var(--surface-alt); border: 1px solid var(--border); display: flex; align-items: center; justify-content: center; font-size: 11px; font-weight: 700; flex-shrink: 0; }
+.cp-card-form { display: flex; flex-direction: column; gap: 12px; }
+.cp-card-form .cp-error { margin-top: 0; }
+.cp-card-save { display: flex; justify-content: flex-end; }
+.cp-nav-dot { display: inline-block; width: 7px; height: 7px; border-radius: 50%; margin-right: 6px; vertical-align: 1px; }
+.cp-card-missing { align-items: center; gap: 14px; padding: 14px 18px; }
+.cp-card-missing-text { flex: 1; display: flex; flex-direction: column; gap: 3px; }
+@media (max-width: 960px) {
+  .cp-card-cols { grid-template-columns: minmax(0, 1fr); }
+}
+@media (max-width: 760px) {
+  .cp-card-alert, .cp-card-missing { flex-wrap: wrap; }
+  .cp-card-alert-act { align-items: flex-start; text-align: left; }
+}
+.cp-card-missing-wrap { padding: 22px 28px 0; max-width: 1160px; }
+@media (max-width: 760px) { .cp-card-missing-wrap { padding: 16px 16px 0; } }
+.cp-nav button { position: relative; }
+.cp-sr { position: absolute; left: 0; top: 0; width: 1px; height: 1px; margin: -1px; padding: 0; border: 0; overflow: hidden; clip: rect(0 0 0 0); white-space: nowrap; }

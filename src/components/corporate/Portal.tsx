@@ -6,6 +6,7 @@ import {
   corporateClient,
   type Application,
   type Business,
+  type CardView,
   type CompanyPage,
   type ManagedAccount,
 } from "@/lib/corporate";
@@ -21,8 +22,9 @@ import ApplyFlow from "./ApplyFlow";
 import PlaceAccount from "./PlaceAccount";
 import Waiting from "./Waiting";
 import Managers from "./Managers";
+import Card from "./Card";
 
-type Tab = "people" | "join" | "statements" | "managers";
+type Tab = "people" | "join" | "statements" | "managers" | "card";
 
 type Unplaced = { account_id: string; account_name: string; company_name: string };
 
@@ -54,14 +56,25 @@ export default function Portal({
   const [loaded, setLoaded] = useState<Loaded | null>(null);
   const [version, setVersion] = useState(0);
   const [loadError, setLoadError] = useState<string | null>(null);
-  const [selected, setSelected] = useState<string | null>(null); // "acct:<id>" | "apps"
-  const [tab, setTab] = useState<Tab>(initialStatement ? "statements" : "people");
+  // The decline email's link, /?account=<id>&tab=card (read once).
+  const [cardLink] = useState(readCardLink);
+  const [selected, setSelected] = useState<string | null>(cardLink?.account ? `acct:${cardLink.account}` : null); // "acct:<id>" | "apps"
+  const [tab, setTab] = useState<Tab>(initialStatement ? "statements" : cardLink?.card ? "card" : "people");
   const [statementId, setStatementId] = useState<string | null>(initialStatement);
   const [editingName, setEditingName] = useState(false);
-  const [showSignIn, setShowSignIn] = useState(!!initialStatement);
+  const [showSignIn, setShowSignIn] = useState(!!initialStatement || !!cardLink);
   // undefined: still reading; null: no such company (a plain "not found").
   const [company, setCompany] = useState<CompanyPage | null | undefined>(applySlug ? undefined : null);
   const [applying, setApplying] = useState(!!applySlug);
+  // The selected account's card (2b), tagged with the account it was read for.
+  const [card, setCard] = useState<{ accountId: string; view: CardView } | null>(null);
+  const [cardVersion, setCardVersion] = useState(0);
+
+  // Once read, the link's query string goes; the path stays (on a Preview the
+  // portal is /corporate).
+  useEffect(() => {
+    if (cardLink) window.history.replaceState(null, "", window.location.pathname);
+  }, [cardLink]);
 
   useEffect(() => {
     if (!supabase) return;
@@ -112,6 +125,23 @@ export default function Portal({
   }, [supabase, userId, version]);
   const data = loaded && loaded.userId === userId ? loaded : null;
   const reload = () => setVersion((v) => v + 1);
+
+  // Which account is shown (an account this person does not manage falls back
+  // to the first), and its card.
+  const shownAccountId = data && selected !== "apps"
+    ? (data.accounts.find((a) => `acct:${a.account_id}` === selected) ?? data.accounts[0])?.account_id ?? null
+    : null;
+  useEffect(() => {
+    if (!supabase || !shownAccountId) return;
+    let alive = true;
+    supabase.rpc("ba_card_view", { p_account: shownAccountId }).then(({ data: v, error }) => {
+      if (!alive || error || !v?.ok) return;
+      setCard({ accountId: shownAccountId, view: v as CardView });
+    });
+    return () => {
+      alive = false;
+    };
+  }, [supabase, shownAccountId, cardVersion]);
 
   // Leave the company link for the portal itself once applying is over: drop
   // the slug from the path rather than going to "/", which on a Preview (where
@@ -220,7 +250,7 @@ export default function Portal({
         <div className="cp-auth-card">
           <div className="cp-auth-brand">Business accounts</div>
           <h1>No account to manage</h1>
-          <p>{email} isn&apos;t a manager of any business account right now. If you think it should be, ask the taxi company.</p>
+          <p>{email}{" "}isn&apos;t a manager of any business account right now. If you think it should be, ask the taxi company.</p>
           <button className="cp-btn" onClick={signOut}>Sign out</button>
         </div>
       </div>
@@ -249,7 +279,15 @@ export default function Portal({
   }
   const options = [...groups.values()];
   const single = options.length === 1 && options[0].items.length === 1;
-  const effectiveTab: Tab = tab === "managers" && !account.business_id ? "people" : tab;
+  const cardView = card && card.accountId === account.account_id ? card.view : null;
+  const cardMode = cardView?.billing_mode === "card";
+  const cardDot = !cardMode ? null
+    : cardView?.reason === "no_card" ? "var(--amber)"
+    : cardView?.reason ? "var(--red)" : null;
+  const effectiveTab: Tab =
+    tab === "managers" && !account.business_id ? "people"
+    : tab === "card" && !cardMode ? (cardView ? "people" : "card")
+    : tab;
 
   return (
     <>
@@ -279,15 +317,49 @@ export default function Portal({
             {account.business_id && (
               <button className={effectiveTab === "managers" ? "on" : ""} onClick={() => setTab("managers")}>Managers</button>
             )}
+            {cardMode && (
+              <button className={effectiveTab === "card" ? "on" : ""} onClick={() => setTab("card")}>
+                {cardDot && <span className="cp-nav-dot" style={{ background: cardDot }} aria-hidden="true" />}
+                Card
+                {cardDot && <span className="cp-sr">{cardView?.reason === "no_card" ? " (no card yet)" : " (declined)"}</span>}
+              </button>
+            )}
           </nav>
         )}
       </TopBar>
+      {!showingApps && cardMode && cardView?.reason === "no_card" && effectiveTab !== "card" && (
+        <div className="cp-card-missing-wrap">
+          <div className="cp-banner cp-card-missing" style={{ marginBottom: 0 }}>
+            <span className="cp-dot" style={{ background: "var(--amber)" }} />
+            <span className="cp-card-missing-text">
+              <b>Add a card so your people can book</b>
+              <span className="cp-hint">
+                {account.company_name}{" "}bills this account to a card, one charge per ride. Until a manager adds one, rides
+                can&apos;t be booked on the account.
+              </span>
+            </span>
+            <button className="cp-btn cp-btn-primary" onClick={() => setTab("card")}>Add a card</button>
+          </div>
+        </div>
+      )}
       {showingApps ? (
         <Waiting supabase={supabase} applications={data.applications} onChanged={reload} />
       ) : effectiveTab === "people" ? (
         <People key={account.account_id} supabase={supabase} account={account} />
       ) : effectiveTab === "join" ? (
         <JoinLink key={account.account_id} supabase={supabase} account={account} />
+      ) : effectiveTab === "card" ? (
+        cardView ? (
+          <Card
+            key={account.account_id}
+            supabase={supabase}
+            account={account}
+            view={cardView}
+            onChanged={() => setCardVersion((v) => v + 1)}
+          />
+        ) : (
+          <main className="cp-main cp-narrow"><div className="cp-empty">Loading…</div></main>
+        )
       ) : effectiveTab === "managers" && account.business_id ? (
         <Managers key={account.business_id} supabase={supabase} businessId={account.business_id} businessName={account.business_name ?? ""} />
       ) : statementId ? (
@@ -303,6 +375,18 @@ export default function Portal({
       )}
     </>
   );
+}
+
+// /?account=<id>&tab=card, from the decline email. An account this person
+// does not manage simply falls back to their first. Null on the server and
+// with no such query.
+function readCardLink(): { account: string | null; card: boolean } | null {
+  if (typeof window === "undefined") return null;
+  const q = new URLSearchParams(window.location.search);
+  const account = q.get("account");
+  const card = q.get("tab") === "card";
+  if (!account && !card) return null;
+  return { account: account && /^[0-9a-f-]{36}$/i.test(account) ? account : null, card };
 }
 
 function TopBar({

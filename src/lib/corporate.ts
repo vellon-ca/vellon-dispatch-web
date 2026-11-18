@@ -41,6 +41,33 @@ export type ManagedAccount = {
   business_name: string | null;
 };
 
+/** ba_card_view: the account's card and what the Card page leads with. */
+export type CardReason = "no_card" | "soft" | "hard" | "budget" | "auth";
+export type CardView = {
+  ok: true;
+  billing_mode: "card" | "invoice" | null;
+  time_zone: string;
+  company_name?: string;
+  stripe_account?: string | null;
+  cards_active?: boolean;
+  card?: {
+    brand: string | null; last4: string | null;
+    exp_month: number | null; exp_year: number | null;
+    added_at: string | null; added_by: string | null;
+  } | null;
+  state?: "soft" | "hard" | "auth" | null;
+  reason?: CardReason | null;
+  decline_code?: string | null;
+  declined_at?: string | null;
+  retry_at?: string | null;
+  last_attempt_at?: string | null;
+  rides?: {
+    id: string; ride_ref: string | null; rider: string | null; pickup_at: string; total_cents: number;
+    state: "card_declined" | "no_card" | "held" | "not_due";
+    hold_at: string | null; deadline: string | null;
+  }[];
+};
+
 export type Business = {
   id: string;
   name: string;
