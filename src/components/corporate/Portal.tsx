@@ -113,10 +113,15 @@ export default function Portal({
   const data = loaded && loaded.userId === userId ? loaded : null;
   const reload = () => setVersion((v) => v + 1);
 
-  // Leave the company link for the portal itself once applying is over.
+  // Leave the company link for the portal itself once applying is over: drop
+  // the slug from the path rather than going to "/", which on a Preview (where
+  // the portal lives at /corporate) is the product site.
   function endApplying() {
     setApplying(false);
-    if (applySlug) window.history.replaceState(null, "", "/");
+    if (applySlug) {
+      const path = window.location.pathname.replace(/\/[^/]+\/?$/, "");
+      window.history.replaceState(null, "", path || "/");
+    }
     setSelected(null);
     reload();
   }
