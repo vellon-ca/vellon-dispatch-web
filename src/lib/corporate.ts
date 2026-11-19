@@ -73,6 +73,28 @@ export type CardView = {
   }[];
 };
 
+/** Card past its expiry month, on the company's clock (good through the last day). */
+export function cardExpired(view: CardView): boolean {
+  const c = view.card;
+  if (!c?.exp_month || !c.exp_year) return false;
+  const [y, m] = new Date().toLocaleDateString("en-CA", { timeZone: view.time_zone }).split("-").map(Number);
+  return c.exp_year < y || (c.exp_year === y && c.exp_month < m);
+}
+
+/**
+ * Monthly card: what is blocking new rides, if anything (Victor, 2026-11-18).
+ * A dead card (hard / budget / auth) or an expired one blocks at once; a soft
+ * decline only while a statement is waiting on the card. Mirrors the server's
+ * ba_monthly_charge_blocked.
+ */
+export function monthlyCardBlock(view: CardView): CardReason | "expired" | null {
+  const r = view.reason ?? null;
+  if (r === "no_card" || r === "hard" || r === "budget" || r === "auth") return r;
+  if (cardExpired(view)) return "expired";
+  if (r === "soft" && (view.charges ?? []).some((c) => c.state === "declined")) return "soft";
+  return null;
+}
+
 export type Business = {
   id: string;
   name: string;

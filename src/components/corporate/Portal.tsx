@@ -9,6 +9,7 @@ import {
   type CardView,
   type CompanyPage,
   type ManagedAccount,
+  monthlyCardBlock,
 } from "@/lib/corporate";
 import SignIn from "./SignIn";
 import People from "./People";
@@ -281,9 +282,10 @@ export default function Portal({
   const single = options.length === 1 && options[0].items.length === 1;
   const cardView = card && card.accountId === account.account_id ? card.view : null;
   const cardMode = cardView?.billing_mode === "card" || cardView?.billing_mode === "card_monthly";
-  // Monthly card: declined only while a statement is waiting on the card.
+  // Monthly card: a dead or expired card, or a soft decline with a statement waiting.
+  const monthlyBlock = cardView?.billing_mode === "card_monthly" ? monthlyCardBlock(cardView) : null;
   const cardDeclined = cardView?.billing_mode === "card_monthly"
-    ? (cardView.charges ?? []).some((c) => c.state === "declined")
+    ? !!monthlyBlock && monthlyBlock !== "no_card"
     : !!cardView?.reason;
   const cardDot = !cardMode ? null
     : cardView?.reason === "no_card" ? "var(--amber)"

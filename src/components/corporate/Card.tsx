@@ -4,7 +4,7 @@ import { useMemo, useRef, useState, useSyncExternalStore } from "react";
 import type { SupabaseClient } from "@supabase/supabase-js";
 import { loadStripe, type Stripe, type Appearance } from "@stripe/stripe-js";
 import { Elements, PaymentElement, useElements, useStripe } from "@stripe/react-stripe-js";
-import { money, monthName, zonedDate, type CardView, type ManagedAccount } from "@/lib/corporate";
+import { money, monthName, monthlyCardBlock, zonedDate, type CardView, type ManagedAccount } from "@/lib/corporate";
 
 /* The business's card, for its managers (2b; mgcj-app
    .claude/notes/business-accounts-card-design.md §9, mockups "PortalCard" and
@@ -80,10 +80,11 @@ export default function Card({
   const monthly = view.billing_mode === "card_monthly";
   const charges = view.charges ?? [];
   const owed = charges.filter((c) => c.state === "declined");
-  // Monthly card: a decline matters only while a statement is waiting on the
-  // card (one voided or paid by hand leaves the card's state behind).
-  const reason = monthly && view.reason !== "no_card" && owed.length === 0 ? null : view.reason ?? null;
-  const declined = reason === "soft" || reason === "hard" || reason === "budget" || reason === "auth";
+  // Monthly card: a dead or expired card blocks at once; a soft decline only
+  // while a statement is waiting on the card (one voided or paid by hand
+  // leaves the card's state behind).
+  const reason = monthly ? monthlyCardBlock(view) : view.reason ?? null;
+  const declined = reason === "soft" || reason === "hard" || reason === "budget" || reason === "auth" || reason === "expired";
   const bank = view.decline_code ? BANK_SAYS[view.decline_code] : undefined;
   const time = (iso: string) => zonedDate(iso, tz, { hour: "numeric", minute: "2-digit" });
   const day = (iso: string) => zonedDate(iso, tz, { month: "short", day: "numeric" });
@@ -123,7 +124,9 @@ export default function Card({
     onChanged();
   }
 
-  const title = declined
+  const title = reason === "expired"
+    ? "Your card has expired"
+    : declined
     ? monthly
       ? `Your card was declined${owed.length ? ` for the ${monthName(owed[0].month)} statement` : ""}${bank ? `: ${bank}` : ""}`
       : `Your card was declined${waiting.length ? ` for ${waiting.length} booked ${waiting.length === 1 ? "ride" : "rides"}` : ""}${bank ? `: ${bank}` : ""}`
@@ -139,7 +142,9 @@ export default function Card({
           ? "The card has been declined too many times this month for us to keep trying it. Add a different card below."
           : reason === "auth"
             ? "The card is fine, but the bank wants the card holder to confirm it once. Enter the same card below and save it; the bank may ask you to approve it."
-            : null;
+            : reason === "expired"
+              ? "Add the new card below."
+              : null;
 
   return (
     <main className="cp-main cp-narrow">
@@ -216,7 +221,7 @@ export default function Card({
                     </span>
                   </span>
                 </div>
-                {declined && view.declined_at && (
+                {declined && reason !== "expired" && view.declined_at && (
                   <div className="cp-hint">
                     <span className="cp-dot" style={{ background: "var(--red)", marginRight: 6 }} />
                     Declined {day(view.declined_at)}{bank ? `: ${bank}` : ""}.
