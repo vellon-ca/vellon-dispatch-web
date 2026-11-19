@@ -81,6 +81,14 @@ export function cardExpired(view: CardView): boolean {
   return c.exp_year < y || (c.exp_year === y && c.exp_month < m);
 }
 
+/** Card in its expiry month, on the company's clock: still works, but next month's charge won't. */
+export function cardExpiresThisMonth(view: CardView): boolean {
+  const c = view.card;
+  if (!c?.exp_month || !c.exp_year) return false;
+  const [y, m] = new Date().toLocaleDateString("en-CA", { timeZone: view.time_zone }).split("-").map(Number);
+  return c.exp_year === y && c.exp_month === m;
+}
+
 /**
  * Monthly card: what is blocking new rides, if anything (Victor, 2026-11-18).
  * A dead card (hard / budget / auth) or an expired one blocks at once; a soft

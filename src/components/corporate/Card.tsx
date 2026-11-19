@@ -4,7 +4,7 @@ import { useMemo, useRef, useState, useSyncExternalStore } from "react";
 import type { SupabaseClient } from "@supabase/supabase-js";
 import { loadStripe, type Stripe, type Appearance } from "@stripe/stripe-js";
 import { Elements, PaymentElement, useElements, useStripe } from "@stripe/react-stripe-js";
-import { money, monthName, monthlyCardBlock, zonedDate, type CardView, type ManagedAccount } from "@/lib/corporate";
+import { cardExpiresThisMonth, money, monthName, monthlyCardBlock, zonedDate, type CardView, type ManagedAccount } from "@/lib/corporate";
 
 /* The business's card, for its managers (2b; mgcj-app
    .claude/notes/business-accounts-card-design.md §9, mockups "PortalCard" and
@@ -195,6 +195,21 @@ export default function Card({
                 {reason === "auth" ? "Confirm the card" : "Replace the card"}
               </button>
             )}
+          </span>
+        </section>
+      )}
+      {!declined && monthly && cardExpiresThisMonth(view) && (
+        <section className="cp-banner cp-card-alert" role="status">
+          <span className="cp-dot" style={{ background: "var(--amber)", marginTop: 6 }} />
+          <span className="cp-card-alert-body">
+            <b>Your card expires this month</b>
+            <span className="cp-hint">
+              This month&apos;s statement is charged to the card early next month, after it has expired, so add the new
+              card below before then. Until it expires, rides are billed to the account as usual.
+            </span>
+          </span>
+          <span className="cp-card-alert-act">
+            <button className="cp-btn cp-btn-primary" onClick={toForm}>Add the new card</button>
           </span>
         </section>
       )}

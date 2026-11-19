@@ -9,6 +9,7 @@ import {
   type CardView,
   type CompanyPage,
   type ManagedAccount,
+  cardExpiresThisMonth,
   monthlyCardBlock,
 } from "@/lib/corporate";
 import SignIn from "./SignIn";
@@ -289,7 +290,8 @@ export default function Portal({
     : !!cardView?.reason;
   const cardDot = !cardMode ? null
     : cardView?.reason === "no_card" ? "var(--amber)"
-    : cardDeclined ? "var(--red)" : null;
+    : cardDeclined ? "var(--red)"
+    : cardView?.billing_mode === "card_monthly" && cardExpiresThisMonth(cardView) ? "var(--amber)" : null;
   const effectiveTab: Tab =
     tab === "managers" && !account.business_id ? "people"
     : tab === "card" && !cardMode ? (cardView ? "people" : "card")
