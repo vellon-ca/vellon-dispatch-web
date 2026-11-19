@@ -281,9 +281,13 @@ export default function Portal({
   const single = options.length === 1 && options[0].items.length === 1;
   const cardView = card && card.accountId === account.account_id ? card.view : null;
   const cardMode = cardView?.billing_mode === "card" || cardView?.billing_mode === "card_monthly";
+  // Monthly card: declined only while a statement is waiting on the card.
+  const cardDeclined = cardView?.billing_mode === "card_monthly"
+    ? (cardView.charges ?? []).some((c) => c.state === "declined")
+    : !!cardView?.reason;
   const cardDot = !cardMode ? null
     : cardView?.reason === "no_card" ? "var(--amber)"
-    : cardView?.reason ? "var(--red)" : null;
+    : cardDeclined ? "var(--red)" : null;
   const effectiveTab: Tab =
     tab === "managers" && !account.business_id ? "people"
     : tab === "card" && !cardMode ? (cardView ? "people" : "card")

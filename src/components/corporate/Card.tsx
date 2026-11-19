@@ -74,14 +74,16 @@ export default function Card({
 }) {
   const tz = view.time_zone;
   const company = view.company_name ?? account.company_name;
-  const reason = view.reason ?? null;
-  const declined = reason === "soft" || reason === "hard" || reason === "budget" || reason === "auth";
   const rides = view.rides ?? [];
   const waiting = rides.filter((r) => r.state === "card_declined" || r.state === "no_card");
   // Monthly card: the card pays the statement, not each ride.
   const monthly = view.billing_mode === "card_monthly";
   const charges = view.charges ?? [];
   const owed = charges.filter((c) => c.state === "declined");
+  // Monthly card: a decline matters only while a statement is waiting on the
+  // card (one voided or paid by hand leaves the card's state behind).
+  const reason = monthly && view.reason !== "no_card" && owed.length === 0 ? null : view.reason ?? null;
+  const declined = reason === "soft" || reason === "hard" || reason === "budget" || reason === "auth";
   const bank = view.decline_code ? BANK_SAYS[view.decline_code] : undefined;
   const time = (iso: string) => zonedDate(iso, tz, { hour: "numeric", minute: "2-digit" });
   const day = (iso: string) => zonedDate(iso, tz, { month: "short", day: "numeric" });
@@ -105,7 +107,9 @@ export default function Card({
     if (error || !data) return setNote({ text: "We couldn't reach the card just now. Try again in a moment.", bad: true });
     if (!data.ok) return setNote({ text: RETRY_ERRORS[data.code] ?? "We couldn't try the card. Try again in a moment.", bad: true });
     if (data.reopened) {
-      setNote({ text: "Nothing was waiting on the card, so the account is open for bookings again. The next ride booked is the retry." });
+      setNote({ text: monthly
+        ? "Nothing is waiting on the card. The next statement is charged to it as usual."
+        : "Nothing was waiting on the card, so the account is open for bookings again. The next ride booked is the retry." });
     } else if (data.state === null) {
       setNote({ text: monthly
         ? "It worked. The statement is paid, and the account is open again."
