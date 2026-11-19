@@ -2,7 +2,7 @@
 
 import { useEffect, useState } from "react";
 import type { SupabaseClient } from "@supabase/supabase-js";
-import { money, monthName, STATEMENT_STATUS, statementStatusLabel, zonedDate, type ManagedAccount, type StatementRow } from "@/lib/corporate";
+import { chargeStatus, money, monthName, STATEMENT_STATUS, statementStatusLabel, zonedDate, type ManagedAccount, type StatementRow } from "@/lib/corporate";
 
 type Usage = { used_cents: number; monthly_limit_cents: number | null; month: string; billing_mode: string | null };
 
@@ -60,7 +60,7 @@ export default function Statements({
 
       {error && <div className="cp-banner" style={{ color: "var(--red)" }}>{error}</div>}
 
-      {usage?.billing_mode === "invoice" && (
+      {(usage?.billing_mode === "invoice" || usage?.billing_mode === "card_monthly") && (
         <section className="cp-card">
           <div className="cp-card-head">
             <span className="cp-card-title">This month · {monthName(usage.month)} · not issued yet</span>
@@ -112,8 +112,8 @@ export default function Statements({
                     <td className="cp-num cp-muted">{r.status === "void" ? "—" : money(r.paid_cents)}</td>
                     <td>
                       <span className="cp-status">
-                        <span className="cp-dot" style={{ background: STATEMENT_STATUS[r.status].color }} />
-                        {statementStatusLabel(r)}
+                        <span className="cp-dot" style={{ background: chargeStatus(r)?.color ?? STATEMENT_STATUS[r.status].color }} />
+                        {chargeStatus(r)?.label ?? statementStatusLabel(r)}
                       </span>
                     </td>
                     <td className="cp-num"><button className="cp-link" onClick={() => onOpen(r.id)}>Open</button></td>

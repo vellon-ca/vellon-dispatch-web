@@ -4,7 +4,7 @@ import { useMemo, useRef, useState, useSyncExternalStore } from "react";
 import type { SupabaseClient } from "@supabase/supabase-js";
 import { loadStripe, type Stripe, type Appearance } from "@stripe/stripe-js";
 import { Elements, PaymentElement, useElements, useStripe } from "@stripe/react-stripe-js";
-import { money, zonedDate, type CardView, type ManagedAccount } from "@/lib/corporate";
+import { money, monthName, zonedDate, type CardView, type ManagedAccount } from "@/lib/corporate";
 
 /* The business's card, for its managers (2b; mgcj-app
    .claude/notes/business-accounts-card-design.md §9, mockups "PortalCard" and
@@ -78,6 +78,10 @@ export default function Card({
   const declined = reason === "soft" || reason === "hard" || reason === "budget" || reason === "auth";
   const rides = view.rides ?? [];
   const waiting = rides.filter((r) => r.state === "card_declined" || r.state === "no_card");
+  // Monthly card: the card pays the statement, not each ride.
+  const monthly = view.billing_mode === "card_monthly";
+  const charges = view.charges ?? [];
+  const owed = charges.filter((c) => c.state === "declined");
   const bank = view.decline_code ? BANK_SAYS[view.decline_code] : undefined;
   const time = (iso: string) => zonedDate(iso, tz, { hour: "numeric", minute: "2-digit" });
   const day = (iso: string) => zonedDate(iso, tz, { month: "short", day: "numeric" });
@@ -103,7 +107,9 @@ export default function Card({
     if (data.reopened) {
       setNote({ text: "Nothing was waiting on the card, so the account is open for bookings again. The next ride booked is the retry." });
     } else if (data.state === null) {
-      setNote({ text: "It worked. The card is charged for the waiting rides, and the account is open again." });
+      setNote({ text: monthly
+        ? "It worked. The statement is paid, and the account is open again."
+        : "It worked. The card is charged for the waiting rides, and the account is open again." });
     } else {
       setNote({
         text: `Still declined.${data.retry_at ? ` We'll try it again ourselves around ${time(data.retry_at)}.` : ""}`,
@@ -114,7 +120,9 @@ export default function Card({
   }
 
   const title = declined
-    ? `Your card was declined${waiting.length ? ` for ${waiting.length} booked ${waiting.length === 1 ? "ride" : "rides"}` : ""}${bank ? `: ${bank}` : ""}`
+    ? monthly
+      ? `Your card was declined${owed.length ? ` for the ${monthName(owed[0].month)} statement` : ""}${bank ? `: ${bank}` : ""}`
+      : `Your card was declined${waiting.length ? ` for ${waiting.length} booked ${waiting.length === 1 ? "ride" : "rides"}` : ""}${bank ? `: ${bank}` : ""}`
     : null;
   const fix =
     reason === "soft"
@@ -135,8 +143,14 @@ export default function Card({
         <div>
           <h1>Card</h1>
           <p>
-            {company}{" "}charges each ride to this card when it&apos;s done. A ride booked for later is held on the card
-            the day before.
+            {monthly ? (
+              <>{company}{" "}charges each month&apos;s statement to this card, 5 days after it&apos;s issued.</>
+            ) : (
+              <>
+                {company}{" "}charges each ride to this card when it&apos;s done. A ride booked for later is held on the card
+                the day before.
+              </>
+            )}
           </p>
         </div>
       </div>
@@ -148,7 +162,8 @@ export default function Card({
             <b>{title}</b>
             <span className="cp-hint">
               {fix}{" "}
-              {waiting.length > 0 && "If a ride still isn't paid by its deadline below, the rider is asked to pay for it themselves or it's cancelled. "}
+              {!monthly && waiting.length > 0 && "If a ride still isn't paid by its deadline below, the rider is asked to pay for it themselves or it's cancelled. "}
+              {monthly && owed.length > 0 && "The statement stays owing until it's paid; we charge it as soon as the card works. "}
               Until then, people can&apos;t bill new rides to the account; they can still book and pay personally.
             </span>
           </span>
@@ -230,6 +245,7 @@ export default function Card({
                     accountId={account.account_id}
                     company={company}
                     saveLabel={reason === "auth" ? "Confirm card" : "Save card"}
+                    monthly={monthly}
                     onSaved={(text, bad) => { setNote({ text, bad }); onChanged(); }}
                   />
                 </CardElements>
@@ -238,6 +254,38 @@ export default function Card({
           </section>
         </div>
 
+        {monthly ? (
+          <section className="cp-card">
+            <div className="cp-card-head">
+              <span className="cp-card-title">Statements waiting on the card</span>
+              <span className="cp-hint">Charged 5 days after each statement is issued.</span>
+            </div>
+            {charges.length === 0 ? (
+              <div className="cp-empty">Nothing waiting on the card right now.</div>
+            ) : (
+              <div className="cp-table-wrap">
+                <table className="cp-table">
+                  <thead>
+                    <tr><th>Statement</th><th>Month</th><th className="cp-num">Amount</th><th>Card</th></tr>
+                  </thead>
+                  <tbody>
+                    {charges.map((c) => (
+                      <tr key={c.id}>
+                        <td className="cp-who">{c.number}</td>
+                        <td className="cp-muted">{monthName(c.month)}</td>
+                        <td className="cp-num">{money(c.amount_cents)}</td>
+                        <td className={c.state === "declined" ? "cp-nowrap" : "cp-muted cp-nowrap"}>
+                          {c.state === "declined" && <span className="cp-dot" style={{ background: "var(--red)", marginRight: 6 }} />}
+                          {c.state === "declined" ? "Declined" : `Charge on ${day(c.due_at)}`}
+                        </td>
+                      </tr>
+                    ))}
+                  </tbody>
+                </table>
+              </div>
+            )}
+          </section>
+        ) : (
         <section className="cp-card">
           <div className="cp-card-head">
             <span className="cp-card-title">Rides waiting on the card</span>
@@ -275,6 +323,7 @@ export default function Card({
             </div>
           )}
         </section>
+        )}
       </div>
     </main>
   );
@@ -307,12 +356,14 @@ function CardElements({ stripeAccount, children }: { stripeAccount: string; chil
 }
 
 function CardForm({
-  supabase, accountId, company, saveLabel, onSaved,
+  supabase, accountId, company, saveLabel, onSaved, monthly = false,
 }: {
   supabase: SupabaseClient;
   accountId: string;
   company: string;
   saveLabel: string;
+  /** Monthly card: what the save charges is a declined statement, not rides. */
+  monthly?: boolean;
   onSaved: (text: string, bad?: boolean) => void;
 }) {
   const stripe = useStripe();
@@ -357,11 +408,12 @@ function CardForm({
         return setError(SAVE_ERRORS[rec?.code] ?? "We couldn't save the card. Try again.");
       }
       elements.getElement("payment")?.clear();
-      const held = rec.due > 0
-        ? ` ${rec.held} of ${rec.due} waiting ${rec.due === 1 ? "ride is" : "rides are"} now held on it.`
-        : "";
+      const held = rec.due === 0 ? ""
+        : monthly
+          ? rec.held === rec.due ? ` The ${rec.due === 1 ? "statement" : "statements"} waiting on the card ${rec.due === 1 ? "is" : "are"} now paid.` : ""
+          : ` ${rec.held} of ${rec.due} waiting ${rec.due === 1 ? "ride is" : "rides are"} now held on it.`;
       if (rec.declined) {
-        onSaved(`Card saved, but the bank declined it for a waiting ride${rec.declined.code && BANK_SAYS[rec.declined.code] ? ` (${BANK_SAYS[rec.declined.code]})` : ""}. See above.`, true);
+        onSaved(`Card saved, but the bank declined it for ${monthly ? "the waiting statement" : "a waiting ride"}${rec.declined.code && BANK_SAYS[rec.declined.code] ? ` (${BANK_SAYS[rec.declined.code]})` : ""}. See above.`, true);
       } else {
         onSaved(`Card saved.${held}`);
       }

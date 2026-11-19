@@ -3,7 +3,7 @@
 import { useEffect, useMemo, useState } from "react";
 import type { SupabaseClient } from "@supabase/supabase-js";
 import {
-  cardMark, money, monthName, STATEMENT_STATUS, statementCsv, statementStatusLabel, zonedDate,
+  cardMark, cardName, chargeLine, chargeStatus, money, monthName, STATEMENT_STATUS, statementCsv, statementStatusLabel, zonedDate,
   type StatementDetail, type StatementLine,
 } from "@/lib/corporate";
 
@@ -130,13 +130,17 @@ export default function Statement({
             {cardPaid > 0 && (
               <div className="cp-hint" style={{ fontWeight: 600, color: "var(--text)" }}>{toPay === 0 ? "All paid by card · nothing to pay" : `${money(cardPaid)} paid by card · ${money(toPay)} to pay`}</div>
             )}
+            {chargeLine(s) && (
+              <div className="cp-hint" style={{ fontWeight: 600, color: chargeStatus(s)?.label === "Charge declined" ? "var(--red)" : "var(--text)" }}>{chargeLine(s)}</div>
+            )}
           </div>
           <div><div className="cp-doc-k">Payment terms</div><b>{s.payment_terms ?? "—"}</b></div>
           <div>
             <div className="cp-doc-k">Status</div>
             <b className="cp-status" style={{ fontSize: 15 }}>
-              <span className="cp-dot" style={{ background: STATEMENT_STATUS[s.status].color }} />
-              {s.status === "owing" || s.status === "part_paid" ? `Owing ${money(owing)}` : statementStatusLabel(s)}
+              <span className="cp-dot" style={{ background: chargeStatus(s)?.color ?? STATEMENT_STATUS[s.status].color }} />
+              {chargeStatus(s)?.label === "Charge declined" ? "Charge declined"
+                : s.status === "owing" || s.status === "part_paid" ? `Owing ${money(owing)}` : statementStatusLabel(s)}
             </b>
           </div>
         </div>
@@ -214,7 +218,10 @@ export default function Statement({
             <h2>Payments received</h2>
             {d.payments.map((p) => (
               <div key={p.id} className="cp-kv">
-                <span>{zonedDate(p.received_on, "UTC", { dateStyle: "long" })}{p.note ? ` · ${p.note}` : ""}</span>
+                <span>
+                  {zonedDate(p.received_on, "UTC", { dateStyle: "long" })}{p.note ? ` · ${p.note}` : ""}
+                  {p.by_card ? ` · charged to ${cardName(p.card_brand, p.card_last4)}` : ""}
+                </span>
                 <b>{money(p.amount_cents)}</b>
               </div>
             ))}

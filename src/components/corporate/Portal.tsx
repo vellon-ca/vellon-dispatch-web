@@ -280,7 +280,7 @@ export default function Portal({
   const options = [...groups.values()];
   const single = options.length === 1 && options[0].items.length === 1;
   const cardView = card && card.accountId === account.account_id ? card.view : null;
-  const cardMode = cardView?.billing_mode === "card";
+  const cardMode = cardView?.billing_mode === "card" || cardView?.billing_mode === "card_monthly";
   const cardDot = !cardMode ? null
     : cardView?.reason === "no_card" ? "var(--amber)"
     : cardView?.reason ? "var(--red)" : null;
@@ -334,7 +334,7 @@ export default function Portal({
             <span className="cp-card-missing-text">
               <b>Add a card so your people can book</b>
               <span className="cp-hint">
-                {account.company_name}{" "}bills this account to a card, one charge per ride. Until a manager adds one, rides
+                {account.company_name}{" "}bills this account to a card, {cardView?.billing_mode === "card_monthly" ? "one charge per monthly statement" : "one charge per ride"}. Until a manager adds one, rides
                 can&apos;t be booked on the account.
               </span>
             </span>

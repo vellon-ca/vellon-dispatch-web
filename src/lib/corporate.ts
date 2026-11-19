@@ -45,7 +45,7 @@ export type ManagedAccount = {
 export type CardReason = "no_card" | "soft" | "hard" | "budget" | "auth";
 export type CardView = {
   ok: true;
-  billing_mode: "card" | "invoice" | null;
+  billing_mode: "card" | "card_monthly" | "invoice" | null;
   time_zone: string;
   company_name?: string;
   stripe_account?: string | null;
@@ -65,6 +65,11 @@ export type CardView = {
     id: string; ride_ref: string | null; rider: string | null; pickup_at: string; total_cents: number;
     state: "card_declined" | "no_card" | "held" | "not_due";
     hold_at: string | null; deadline: string | null;
+  }[];
+  /** Monthly card: statements whose charge is still to come or was declined. */
+  charges?: {
+    id: string; month: string; number: string; amount_cents: number;
+    state: "scheduled" | "declined"; due_at: string; declined_at: string | null;
   }[];
 };
 
@@ -187,6 +192,14 @@ export type StatementRow = {
   paid_cents: number;
   /** Lines already charged to the business's card; never owed. */
   card_paid_cents?: number;
+  /** Monthly card: the part charged to the business's card, and where that stands. */
+  charge_cents?: number;
+  charge_state?: "scheduled" | "paid" | "declined" | "not_needed" | null;
+  charge_due_at?: string | null;
+  charged_at?: string | null;
+  charge_declined_at?: string | null;
+  charge_card_brand?: string | null;
+  charge_card_last4?: string | null;
   last_paid_on: string | null;
   voided_at: string | null;
   void_reason: string | null;
@@ -206,7 +219,7 @@ export type StatementLine = {
   total_cents: number;
   tax_rate_percent: number | null;
   /** card = already charged to the business's card (amounts net of any refund at issue). */
-  kind?: "invoice" | "card";
+  kind?: "invoice" | "card" | "card_monthly";
   refunded_cents?: number;
   card_last4?: string | null;
 };
@@ -226,7 +239,11 @@ export type StatementDetail = {
     booking_fees_cents: number;
   };
   lines: StatementLine[];
-  payments: { id: string; amount_cents: number; received_on: string; note: string | null }[];
+  payments: {
+    id: string; amount_cents: number; received_on: string; note: string | null;
+    /** The statement's charge to the business's card. */
+    by_card?: boolean; card_brand?: string | null; card_last4?: string | null;
+  }[];
 };
 
 /** "Paid by card" for a month that was all card; "Owing" while only the card
@@ -236,6 +253,40 @@ export function statementStatusLabel(r: Pick<StatementRow, "status" | "total_cen
   if (r.status === "paid" && card >= r.total_cents) return "Paid by card";
   if (r.status === "part_paid" && r.paid_cents <= card) return STATEMENT_STATUS.owing.label;
   return STATEMENT_STATUS[r.status].label;
+}
+
+// Monthly card: the statement's charge to the business's card.
+const chargeOwed = (r: StatementRow) =>
+  (r.status === "owing" || r.status === "part_paid") && (r.charge_cents ?? 0) > 0;
+
+/** Overrides the status while the charge is coming or was declined. */
+export function chargeStatus(r: StatementRow): { label: string; color: string } | null {
+  if (!chargeOwed(r)) return null;
+  if (r.charge_state === "declined") return { label: "Charge declined", color: "var(--red)" };
+  if (r.charge_state === "scheduled" && r.charge_due_at) {
+    return { label: `Charge on ${zonedDate(r.charge_due_at, r.time_zone, { month: "short", day: "numeric" })}`, color: STATEMENT_STATUS.owing.color };
+  }
+  return null;
+}
+
+const BRANDS: Record<string, string> = {
+  visa: "Visa", mastercard: "Mastercard", amex: "American Express", discover: "Discover",
+  interac: "Interac", jcb: "JCB", unionpay: "UnionPay", diners: "Diners Club",
+};
+export function cardName(brand: string | null | undefined, last4: string | null | undefined): string {
+  if (!last4) return "your card";
+  return `${(brand && BRANDS[brand]) || "Card"} ••${last4}`;
+}
+
+/** "Will be charged to … on …", "Charged to … on …", "The charge to … was declined on …". */
+export function chargeLine(r: StatementRow): string | null {
+  const day = (iso: string) => zonedDate(iso, r.time_zone, { month: "long", day: "numeric" });
+  const card = cardName(r.charge_card_brand, r.charge_card_last4);
+  if (r.charge_state === "paid" && r.charged_at) return `Charged to ${card} on ${day(r.charged_at)}.`;
+  if (!chargeOwed(r)) return null;
+  if (r.charge_state === "declined" && r.charge_declined_at) return `The charge to ${card} was declined on ${day(r.charge_declined_at)}.`;
+  if (r.charge_state === "scheduled" && r.charge_due_at) return `Will be charged to your card on file on ${day(r.charge_due_at)}.`;
+  return null;
 }
 
 /** A card line's mark: "Card ••4242". */
