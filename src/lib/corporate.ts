@@ -340,12 +340,14 @@ export function monthName(month: string, style: "long" | "short" = "long"): stri
 /* The same columns as the CSV attached to the statement email. A cell a
    spreadsheet would run as a formula is prefixed with an apostrophe: names and
    addresses come from riders. */
+/** One CSV cell: quoted when needed, and never read as a spreadsheet formula. */
+function cell(v: string | number | null): string {
+  let s = v == null ? "" : String(v);
+  if (/^[=+\-@\t\r]/.test(s)) s = "'" + s;
+  return /[",\r\n]/.test(s) ? `"${s.replace(/"/g, '""')}"` : s;
+}
+
 export function statementCsv(d: StatementDetail): string {
-  const cell = (v: string | number | null) => {
-    let s = v == null ? "" : String(v);
-    if (/^[=+\-@\t\r]/.test(s)) s = "'" + s;
-    return /[",\r\n]/.test(s) ? `"${s.replace(/"/g, '""')}"` : s;
-  };
   const s = d.statement;
   const head = "Statement,Ride,Pickup,Month,Rider,Team,From,To,Fare,Booking fee,Total,Tax rate,Paid by,Refunded";
   const rows = d.lines.map((l) =>
@@ -357,6 +359,32 @@ export function statementCsv(d: StatementDetail): string {
       l.tax_rate_percent == null ? "" : `${Number(l.tax_rate_percent)}%`,
       l.kind === "card" ? ["Card", l.card_last4].filter(Boolean).join(" ") : "Statement",
       (l.refunded_cents ?? 0) > 0 ? ((l.refunded_cents ?? 0) / 100).toFixed(2) : "",
+    ].map(cell).join(","),
+  );
+  return "\uFEFF" + [head, ...rows].join("\r\n");
+}
+
+/** ba_account_rides: every upcoming ride plus one month's past ones. No driver, by design. */
+export type AccountRide = {
+  id: string; ride_ref: string | null; pickup_at: string; rider: string | null; team: string | null;
+  from: string | null; to: string | null; state: "booked" | "in_progress" | "done" | "cancelled";
+  total_cents: number | null;
+};
+
+export const RIDE_STATE: Record<AccountRide["state"], { label: string; color: string }> = {
+  booked: { label: "Booked", color: "var(--blue)" },
+  in_progress: { label: "In progress", color: "var(--amber)" },
+  done: { label: "Done", color: "var(--green)" },
+  cancelled: { label: "Cancelled", color: "var(--text-3)" },
+};
+
+export function ridesCsv(rides: AccountRide[], timeZone: string): string {
+  const head = "Ride,Pickup,Rider,Team,From,To,Status,Total";
+  const rows = rides.map((r) =>
+    [
+      r.ride_ref, zonedDate(r.pickup_at, timeZone, { dateStyle: "medium", timeStyle: "short" }),
+      r.rider ?? "Former member", r.team ?? "", r.from, r.to, RIDE_STATE[r.state].label,
+      r.total_cents == null ? "" : (r.total_cents / 100).toFixed(2),
     ].map(cell).join(","),
   );
   return "\uFEFF" + [head, ...rows].join("\r\n");

@@ -15,6 +15,7 @@ import {
 import SignIn from "./SignIn";
 import People from "./People";
 import JoinLink from "./JoinLink";
+import Rides from "./Rides";
 import Statements from "./Statements";
 import Statement from "./Statement";
 import Welcome from "./Welcome";
@@ -26,7 +27,7 @@ import Waiting from "./Waiting";
 import Managers from "./Managers";
 import Card from "./Card";
 
-type Tab = "people" | "join" | "statements" | "managers" | "card";
+type Tab = "people" | "join" | "rides" | "statements" | "managers" | "card";
 
 type Unplaced = { account_id: string; account_name: string; company_name: string };
 
@@ -320,7 +321,7 @@ export default function Portal({
           <nav className="cp-nav">
             <button className={effectiveTab === "people" ? "on" : ""} onClick={() => setTab("people")}>People</button>
             <button className={effectiveTab === "join" ? "on" : ""} onClick={() => setTab("join")}>Join link</button>
-            <button disabled title="Coming soon">Rides</button>
+            <button className={effectiveTab === "rides" ? "on" : ""} onClick={() => { setTab("rides"); setStatementId(null); }}>Rides</button>
             <button className={effectiveTab === "statements" ? "on" : ""} onClick={() => { setTab("statements"); setStatementId(null); }}>Statements</button>
             {account.business_id && (
               <button className={effectiveTab === "managers" ? "on" : ""} onClick={() => setTab("managers")}>Managers</button>
@@ -370,6 +371,8 @@ export default function Portal({
         )
       ) : effectiveTab === "managers" && account.business_id ? (
         <Managers key={account.business_id} supabase={supabase} businessId={account.business_id} businessName={account.business_name ?? ""} />
+      ) : effectiveTab === "rides" ? (
+        <Rides key={account.account_id} supabase={supabase} account={account} />
       ) : statementId ? (
         <Statement
           key={statementId}
